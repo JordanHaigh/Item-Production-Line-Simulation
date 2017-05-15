@@ -1,7 +1,7 @@
 /**
  * Created by Jordan on 15-May-17.
  */
-public class InfiniteInboundStorage extends InterStageStorage implements IObserver
+public class InfiniteInboundStorage extends InterStageStorage
 {
     private Stage inboundStage;
     private Stage outboundStage;
@@ -13,29 +13,19 @@ public class InfiniteInboundStorage extends InterStageStorage implements IObserv
     {
         super(inboundStage, outboundStage);
         this.simulation = simulation;
-        initialiseObserver();
+        //initialiseObserver();
     }
 
     @Override
     public Item dequeue()
     {
-        return new Item(outboundStage.getStageID(), currentTime);
+        return new Item(outboundStage.getStageID(), simulation.getCurrentSimulationTime());
     }
-
-    /**
-     * Observer implementation
-     * OBSERVING SIMULATION FOR CURRENT TIME VALUE
-     * https://www.tutorialspoint.com/design_pattern/observer_pattern.htm
-     */
 
     @Override
-    public void update(ObservableMessage currentTimeMessage)
+    public boolean isEmpty()
     {
-        this.currentTime = currentTimeMessage.getValue();
+        return false;
     }
 
-    public void initialiseObserver()
-    {
-        simulation.attach(this);
-    }
 }

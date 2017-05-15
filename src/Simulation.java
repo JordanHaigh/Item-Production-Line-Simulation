@@ -1,9 +1,9 @@
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by Jordan on 15-May-17.
  */
+
+import java.util.PriorityQueue;
+
 public class Simulation implements IObserver
 {
     private double m,n;
@@ -15,9 +15,8 @@ public class Simulation implements IObserver
     private InfiniteOutboundStorage outboundStorage;
 
     private double currentSimulationTime = 0;
-    private double finishSimulationTime;
     public final int MAX_SIMULATION_TIME = 10000000;
-    private double p;
+    private PriorityQueue<Double> priorityQueue = new PriorityQueue();
 
     public Simulation(double m, double n, int qMax)
     {
@@ -38,6 +37,7 @@ public class Simulation implements IObserver
 
         //Link Queue to stage
         q01 = new InterStageStorage(qMax, s1, s0);
+        //todo implement interstagestorage constructor for LL
         /*q12 = new InterStageStorage(qMax, s2, s1);
         q23 = new InterStageStorage(qMax, s3, s2);
         q34 = new InterStageStorage(qMax, s4, s3);
@@ -55,6 +55,11 @@ public class Simulation implements IObserver
         s1.setOutboundStorage(outboundStorage);
 
         initialiseObservers();
+    }
+
+    public double getCurrentSimulationTime()
+    {
+        return currentSimulationTime;
     }
 
     public void startProcessing()
@@ -77,8 +82,9 @@ public class Simulation implements IObserver
     @Override
     public void update(ObservableMessage pValueMessage)
     {
-        this.p = pValueMessage.getValue();
-        this.finishSimulationTime = currentSimulationTime + p;
+        double p = pValueMessage.getValue();
+        double finishSimulationTime = this.currentSimulationTime + p;
+        priorityQueue.add(finishSimulationTime);
     }
 
     public void initialiseObservers()
@@ -86,28 +92,5 @@ public class Simulation implements IObserver
         s0.attach(this);
         s1.attach(this);
     }
-
-
-    /**
-     * Observer pattern implementation
-     * SUBJECT FOR INFINITE INBOUND STORAGE
-     * https://www.tutorialspoint.com/design_pattern/observer_pattern.htm
-     */
-    private List<IObserver> observers = new ArrayList<>();
-
-    public void attach(IObserver observer)
-    {
-        observers.add(observer);
-    }
-
-    public void notifyAllObservers()
-    {
-        ObservableMessage currentSimulationTime = new ObservableMessage(this.currentSimulationTime);
-        for (IObserver observer : observers)
-        {
-            observer.update(currentSimulationTime);
-        }
-    }
-
 
 }

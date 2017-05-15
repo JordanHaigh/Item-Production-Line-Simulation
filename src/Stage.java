@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * Created by Jordan on 15-May-17.
  */
-public class Stage
+public class Stage implements IObservable
 {
     private double m;
     private double n;
