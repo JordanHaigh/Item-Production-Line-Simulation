@@ -14,7 +14,6 @@ public class InterStageStorage
     //Used for InfiniteStorage Classes
     public InterStageStorage(Stage inboundStage, Stage outboundStage)
     {
-        super();
         this.inboundStage = inboundStage;
         this.outboundStage = outboundStage;
     }

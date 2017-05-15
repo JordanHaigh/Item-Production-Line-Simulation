@@ -3,7 +3,8 @@ import java.util.LinkedList;
 /**
  * Created by Jordan on 15-May-17.
  */
-public class InfiniteOutboundStorage extends InterStageStorage {
+public class InfiniteOutboundStorage extends InterStageStorage
+{
     LinkedList<Item> outboundList = new LinkedList<>();
 
     /**

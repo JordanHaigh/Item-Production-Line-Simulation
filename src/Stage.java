@@ -84,6 +84,10 @@ public class Stage implements IObservable
 
     public boolean isProcessing() { return state.equals(StageStates.PROCESSING); }
 
+    public boolean isEmpty() {return state.equals(StageStates.EMPTY); }
+
+    public boolean isFinishedProcessing() {return state.equals(StageStates.FINISHEDPROCESSING); }
+
     public void startProcessingItem(Item item)
     {
         state = StageStates.PROCESSING;
@@ -117,19 +121,28 @@ public class Stage implements IObservable
 
     public void retrieveItemFromInboundStorage()
     {
-        if (inboundStorage.isEmpty())
+        if(!isEmpty())
         {
-            starve();
+            throw new RuntimeException("Trying to add item to a stage that is processing");
         }
         else
         {
-            //Take item from inbound queue ready for processing
-            Item newItem = inboundStorage.dequeue();
+            if (inboundStorage.isEmpty())
+            {
+                starve();
+            }
+            else
+            {
+                //Take item from inbound queue ready for processing
+                Item newItem = inboundStorage.dequeue();
 
-            //State ready for processing
-            state = StageStates.READY;
-            startProcessingItem(newItem);
+                //State ready for processing
+                state = StageStates.READY;
+                startProcessingItem(newItem);
+            }
         }
+
+
     }
 
     public void block()

@@ -3,13 +3,15 @@
  */
 
 import java.util.PriorityQueue;
+import java.util.LinkedList;
 
 public class Simulation implements IObserver
 {
     private double m,n;
     private int qMax;
 
-    private Stage s0, s1; //s2, s3, s4, s5, s6;
+    private LinkedList<Stage> stages = new LinkedList<>();
+    private Stage s0,s1;//s2,s3,s4,s5,s6;
     private InterStageStorage q01;//, q12, q23,q34,q45,q56;
     private InfiniteInboundStorage inboundItemGeneration;
     private InfiniteOutboundStorage outboundStorage;
@@ -25,9 +27,12 @@ public class Simulation implements IObserver
         this.qMax = qMax;
 
         //Create and link simulation
-
         s0 = new Stage(this.m, this.n, 1, 1);
         s1 = new Stage(this.m, this.n, 1);
+        //s2, s3, s4, s5, s6;
+        stages.addLast(s0);
+        stages.addLast(s1);
+
         /*s2 = new Stage(this.m, this.n, 1);
         s3 = new Stage(this.m, this.n, 2);
         s4 = new Stage(this.m, this.n, 1);
@@ -64,13 +69,25 @@ public class Simulation implements IObserver
 
     public void startProcessing()
     {
-        Item item = inboundItemGeneration.dequeue();
-        if(!s0.isBlocked() || !s0.isProcessing())
+        int i = 0;
+        while(currentSimulationTime <= MAX_SIMULATION_TIME)
         {
-            s0.startProcessingItem(item);
+            if(s0.isEmpty())
+            {
+                s0.retrieveItemFromInboundStorage();
+                System.out.println("Print"+ i++);
+
+                //Iterate over each stage in the linked list
+                for(Stage s: stages)
+                {
+                    //Determine whether a stage has finished processing
+                }
+
+
+                currentSimulationTime = priorityQueue.remove();
+
+            }
         }
-
-
     }
 
     /**
@@ -84,7 +101,9 @@ public class Simulation implements IObserver
     {
         double p = pValueMessage.getValue();
         double finishSimulationTime = this.currentSimulationTime + p;
-        priorityQueue.add(finishSimulationTime);
+        priorityQueue.add(finishSimulationTime); //Stores next finish time for item at a single substage
+
+
     }
 
     public void initialiseObservers()
