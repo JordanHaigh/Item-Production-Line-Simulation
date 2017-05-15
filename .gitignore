@@ -1,0 +1,6 @@
+*.class
+thumbs.db
+.idea/
+target/
+*.dat
+.settings/
