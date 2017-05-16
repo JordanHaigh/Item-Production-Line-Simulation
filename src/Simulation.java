@@ -5,13 +5,12 @@
 import java.util.PriorityQueue;
 import java.util.LinkedList;
 
-public class Simulation
-{
-    private double m,n;
+public class Simulation {
+    private double m, n;
     private int qMax;
 
     private LinkedList<Stage> stages = new LinkedList<>();
-    private Stage s0,s1;//s2,s3,s4,s5,s6;
+    private Stage s0, s1;//s2,s3,s4,s5,s6;
     private InterStageStorage q01;//, q12, q23,q34,q45,q56;
     private InfiniteInboundStorage inboundItemGeneration;
     private InfiniteOutboundStorage outboundStorage;
@@ -20,15 +19,14 @@ public class Simulation
     public final int MAX_SIMULATION_TIME = 10000000;
     private PriorityQueue<Double> priorityQueue = new PriorityQueue();
 
-    public Simulation(double m, double n, int qMax)
-    {
+    public Simulation(double m, double n, int qMax) {
         this.m = m;
         this.n = n;
         this.qMax = qMax;
 
         //Create and link simulation
         s0 = new Stage(this.m, this.n, 1, 1, this);
-        s1 = new Stage(this.m, this.n, 1, this) ;
+        s1 = new Stage(this.m, this.n, 1, this);
         //s2, s3, s4, s5, s6;
         stages.addLast(s0);
         stages.addLast(s1);
@@ -60,29 +58,25 @@ public class Simulation
         s1.setOutboundStorage(outboundStorage);
     }
 
-    public double getCurrentSimulationTime()
-    {
+    public double getCurrentSimulationTime() {
         return currentSimulationTime;
     }
 
-    public void startProcessing()
-    {
-        int i = 0;
-        while(currentSimulationTime <= MAX_SIMULATION_TIME)
-        {
-            if(s0.isEmpty())
+    public void startProcessing() {
+        while (currentSimulationTime <= MAX_SIMULATION_TIME) {
+            if (s0.isEmpty())
             {
-                s0.retrieveItemFromInboundStorage();
-                System.out.println("Print"+ i++);
-
-                //Iterate over each stage in the linked list
-                for(Stage s: stages)
-                {
-                    //Determine whether a stage has finished processing
-                }
-
+                Item item = s0.retrieveItemFromInboundStorage();
+                s0.startProcessingItem(item);
 
                 currentSimulationTime = priorityQueue.remove();
+
+                //Iterate over each stage in the linked list
+                for (Stage s : stages)
+                {
+                    //Determine whether a stage has finished processing
+                    s.finishProcessingItem(item, currentSimulationTime);
+                }
 
             }
         }

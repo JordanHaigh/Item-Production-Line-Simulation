@@ -11,7 +11,6 @@ public class InfiniteInboundStorage extends InterStageStorage
     {
         super(inboundStage, outboundStage);
         this.simulation = simulation;
-        //initialiseObserver();
     }
 
     @Override

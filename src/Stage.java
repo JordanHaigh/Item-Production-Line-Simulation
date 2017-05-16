@@ -18,6 +18,8 @@ public class Stage
     private InterStageStorage inboundStorage;
     private InterStageStorage outboundStorage;
 
+
+    /*Passing simulation through to access currentSimulationTime*/
     private Simulation simulation;
     private double currentSimulationTime;
     private double finishSimulationTime;
@@ -102,13 +104,16 @@ public class Stage
         finishSimulationTime = simulation.getCurrentSimulationTime() + p;
     }
 
-    public void finishProcessingItem(Item item)
+    public void finishProcessingItem(Item item, double currentSimulationTime)
     {
         //Where currentTime >= finishTime
-        state = StageStates.FINISHEDPROCESSING;
+        if(currentSimulationTime >= finishSimulationTime)
+        {
+            state = StageStates.FINISHEDPROCESSING;
 
-        sendToOutboundStorage(item);
-        retrieveItemFromInboundStorage();
+            sendToOutboundStorage(item);
+            retrieveItemFromInboundStorage();
+        }
     }
 
     public void starve()
@@ -117,14 +122,14 @@ public class Stage
         state = StageStates.STARVED;
     }
 
-    public void unstarve()
+/*    public void unstarve()
     {
         state = StageStates.EMPTY;
 
         retrieveItemFromInboundStorage();
-    }
+    }*/
 
-    public void retrieveItemFromInboundStorage()
+    public Item retrieveItemFromInboundStorage()
     {
         if(!isEmpty())
         {
@@ -143,9 +148,11 @@ public class Stage
 
                 //State ready for processing
                 state = StageStates.READY;
-                startProcessingItem(newItem);
+                return newItem;
+                //startProcessingItem(newItem);
             }
         }
+        return null;//Will not reach this part of the method
     }
 
     public void block()
@@ -155,13 +162,13 @@ public class Stage
         state = StageStates.BLOCKED;
     }
 
-    public void unblock(Item item)
+/*    public void unblock(Item item)
     {
         //Outbound Queue is not full
         state = StageStates.FINISHEDPROCESSING;
 
         sendToOutboundStorage(item);
-    }
+    }*/
 
     public void sendToOutboundStorage(Item item)
     {
@@ -170,7 +177,8 @@ public class Stage
 
         if (outboundStorage.isFull())
             block();
-        else {
+        else
+        {
             //Item can be enqueued in the following queue
             outboundStorage.enqueue(item);
             //Set state back to empty
