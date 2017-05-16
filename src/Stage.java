@@ -108,12 +108,12 @@ public class Stage
     public void finishProcessingItem(Item item, double currentSimulationTime)
     {
         //Where currentTime >= finishTime
-        if(currentSimulationTime >= finishSimulationTime)
+        if(currentSimulationTime >= finishSimulationTime && isProcessing())
         {
             state = StageStates.FINISHEDPROCESSING;
 
             sendToOutboundStorage(item);
-            retrieveItemFromInboundStorage();
+            //retrieveItemFromInboundStorage();
         }
     }
 

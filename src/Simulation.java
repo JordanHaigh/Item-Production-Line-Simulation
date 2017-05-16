@@ -85,6 +85,7 @@ public class Simulation
                 {
                     //Determine whether a stage has finished processing
                     s.finishProcessingItem(item, currentSimulationTime);
+                    //
                 }
             }
         }
