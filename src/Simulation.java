@@ -5,7 +5,8 @@
 import java.util.PriorityQueue;
 import java.util.LinkedList;
 
-public class Simulation {
+public class Simulation
+{
     private double m, n;
     private int qMax;
 
@@ -15,11 +16,12 @@ public class Simulation {
     private InfiniteInboundStorage inboundItemGeneration;
     private InfiniteOutboundStorage outboundStorage;
 
-    private double currentSimulationTime = 0;
+    private double currentSimulationTime = 0; //Start at 0
     public final int MAX_SIMULATION_TIME = 10000000;
-    private PriorityQueue<Double> priorityQueue = new PriorityQueue();
+    private PriorityQueue<Double> priorityQueue = new PriorityQueue<>();
 
-    public Simulation(double m, double n, int qMax) {
+    public Simulation(double m, double n, int qMax)
+    {
         this.m = m;
         this.n = n;
         this.qMax = qMax;
@@ -62,8 +64,15 @@ public class Simulation {
         return currentSimulationTime;
     }
 
-    public void startProcessing() {
-        while (currentSimulationTime <= MAX_SIMULATION_TIME) {
+    public void addToPriorityQueue(double time)
+    {
+        priorityQueue.add(time);
+    }
+
+    public void startProcessing()
+    {
+        while (currentSimulationTime <= MAX_SIMULATION_TIME)
+        {
             if (s0.isEmpty())
             {
                 Item item = s0.retrieveItemFromInboundStorage();
@@ -77,7 +86,6 @@ public class Simulation {
                     //Determine whether a stage has finished processing
                     s.finishProcessingItem(item, currentSimulationTime);
                 }
-
             }
         }
     }

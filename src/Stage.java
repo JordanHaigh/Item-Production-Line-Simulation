@@ -102,6 +102,7 @@ public class Stage
         //calc p value for random - as per spec
         p = calculatePValue();
         finishSimulationTime = simulation.getCurrentSimulationTime() + p;
+        simulation.addToPriorityQueue(finishSimulationTime);
     }
 
     public void finishProcessingItem(Item item, double currentSimulationTime)
