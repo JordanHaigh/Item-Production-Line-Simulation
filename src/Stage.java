@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * Created by Jordan on 15-May-17.
  */
-public class Stage implements IObservable
+public class Stage
 {
     private double m;
     private double n;
@@ -18,19 +18,24 @@ public class Stage implements IObservable
     private InterStageStorage inboundStorage;
     private InterStageStorage outboundStorage;
 
-    public Stage(double m, double n, int multiplier)
+    private Simulation simulation;
+    private double currentSimulationTime;
+    private double finishSimulationTime;
+
+    public Stage(double m, double n, int multiplier, Simulation simulation)
     {
         this.m = m;
         this.n = n;
         this.multiplier = multiplier;
         state = StageStates.STARVED;
+        this.simulation = simulation;
     }
 
-    public Stage(double m, double n, int multiplier, int stageID)
+    public Stage(double m, double n, int multiplier, int stageID, Simulation simulation)
     {
         //Since stag id is being passed through, we know that it will be one of the starting stages
         //Therefore the state should start at empty
-        this(m, n, multiplier);
+        this(m, n, multiplier, simulation);
         this.stageID = stageID;
         state = StageStates.EMPTY;
     }
@@ -94,7 +99,7 @@ public class Stage implements IObservable
 
         //calc p value for random - as per spec
         p = calculatePValue();
-        notifyAllObservers(); //Notify of updated p value to determine T2
+        finishSimulationTime = simulation.getCurrentSimulationTime() + p;
     }
 
     public void finishProcessingItem(Item item)
@@ -141,8 +146,6 @@ public class Stage implements IObservable
                 startProcessingItem(newItem);
             }
         }
-
-
     }
 
     public void block()
@@ -174,27 +177,4 @@ public class Stage implements IObservable
             state = StageStates.EMPTY;
         }
     }
-
-
-    /**
-     * Observer pattern implementation
-     * SUBJECT OF SIMULATION OBSERVER
-     * https://www.tutorialspoint.com/design_pattern/observer_pattern.htm
-     */
-    private List<IObserver> observers = new ArrayList<>();
-
-    public void attach(IObserver observer)
-    {
-        observers.add(observer);
-    }
-
-    public void notifyAllObservers()
-    {
-        ObservableMessage pValueMessage = new ObservableMessage(this.p);
-        for (IObserver observer : observers)
-        {
-            observer.update(pValueMessage);
-        }
-    }
-
 }

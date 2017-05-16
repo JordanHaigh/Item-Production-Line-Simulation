@@ -5,7 +5,7 @@
 import java.util.PriorityQueue;
 import java.util.LinkedList;
 
-public class Simulation implements IObserver
+public class Simulation
 {
     private double m,n;
     private int qMax;
@@ -27,8 +27,8 @@ public class Simulation implements IObserver
         this.qMax = qMax;
 
         //Create and link simulation
-        s0 = new Stage(this.m, this.n, 1, 1);
-        s1 = new Stage(this.m, this.n, 1);
+        s0 = new Stage(this.m, this.n, 1, 1, this);
+        s1 = new Stage(this.m, this.n, 1, this) ;
         //s2, s3, s4, s5, s6;
         stages.addLast(s0);
         stages.addLast(s1);
@@ -58,8 +58,6 @@ public class Simulation implements IObserver
 
         s1.setInboundStorage(q01);
         s1.setOutboundStorage(outboundStorage);
-
-        initialiseObservers();
     }
 
     public double getCurrentSimulationTime()
@@ -89,27 +87,4 @@ public class Simulation implements IObserver
             }
         }
     }
-
-    /**
-     * Observer implementation
-     * OBSERVING STAGE FOR P VALUE
-     * https://www.tutorialspoint.com/design_pattern/observer_pattern.htm
-     */
-
-    @Override
-    public void update(ObservableMessage pValueMessage)
-    {
-        double p = pValueMessage.getValue();
-        double finishSimulationTime = this.currentSimulationTime + p;
-        priorityQueue.add(finishSimulationTime); //Stores next finish time for item at a single substage
-
-
-    }
-
-    public void initialiseObservers()
-    {
-        s0.attach(this);
-        s1.attach(this);
-    }
-
 }
