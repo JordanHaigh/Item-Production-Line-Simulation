@@ -73,7 +73,7 @@ public class Simulation
     {
         while (currentSimulationTime <= MAX_SIMULATION_TIME)
         {
-            if (s0.isEmpty())
+            /*if (s0.isEmpty())
             {
                 Item item = s0.retrieveItemFromInboundStorage();
                 s0.startProcessingItem(item);
@@ -87,7 +87,39 @@ public class Simulation
                     s.finishProcessingItem(item, currentSimulationTime);
                     //
                 }
-            }
+            }*/ //TODO WROOOOOOONG
+
+
+            // prime s0a / s0b with items?
+            // add finish times to queue
+            //currenttime =  queue.dequeue
+
+/*            while loop  curernttime <  10 million
+            {
+                for each loop over all stages first
+                {
+                    check if s is currently empty
+                    s.retrieve from inbound if not empty
+                    //depending on the queue setup it will generate a new item for the first stage or pass through an item from a queue
+
+                    if simulation.currenttime == stage.finishtime
+                    finish processing item and send it on to the queue
+
+                    //stages need to talk to each other
+                    //stage private variables in the stage class to determine backwards and forwards? YES
+                    //todo see book
+
+
+                }
+                DING DONG the current time has been updated!
+            }*/
+
+
+
+
+
+
+
         }
     }
 }

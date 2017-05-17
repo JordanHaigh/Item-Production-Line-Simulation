@@ -3,10 +3,11 @@
  */
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 public class InterStageStorage
 {
-    protected LinkedList<Item> list = new LinkedList<>();
+    protected Queue<Item> list = new LinkedList<>();
     protected int qMax;
     protected Stage inboundStage;
     protected Stage outboundStage;
@@ -28,12 +29,12 @@ public class InterStageStorage
 
     public void enqueue(Item item)
     {
-        list.addLast(item);
+        list.add(item);
     }
 
     public Item dequeue()
     {
-        return list.removeFirst();
+        return list.remove();
     }
 
     public int size()
