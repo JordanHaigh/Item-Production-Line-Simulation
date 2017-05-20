@@ -9,12 +9,12 @@ public class InterStageStorage
 {
     protected Queue<Item> list = new LinkedList<>();
     protected int qMax;
-    protected Stage inboundStage;
-    protected Stage outboundStage;
+    protected MasterStage inboundStage;
+    protected MasterStage outboundStage;
     protected String name;
 
     //Used for InfiniteStorage Classes
-    public InterStageStorage(Stage inboundStage, Stage outboundStage, String name)
+    public InterStageStorage(MasterStage inboundStage, MasterStage outboundStage, String name)
     {
         this.inboundStage = inboundStage;
         this.outboundStage = outboundStage;
@@ -22,7 +22,7 @@ public class InterStageStorage
     }
 
 
-    public InterStageStorage(int qMax, Stage inboundStage, Stage outboundStage, String name)
+    public InterStageStorage(int qMax, MasterStage inboundStage, MasterStage outboundStage, String name)
     {
         this(inboundStage, outboundStage, name);
 

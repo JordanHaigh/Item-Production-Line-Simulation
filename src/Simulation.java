@@ -10,8 +10,10 @@ public class Simulation
     private double m, n;
     private int qMax;
 
-    private LinkedList<Stage> stages = new LinkedList<>();
-    private Stage s0, s1, s2; //s3,s4,s5,s6;
+    private Stage s0a, s0b, s1a, s2a; //s3,s4,s5,s6;
+    private MasterStage s0, s1, s2;
+    private LinkedList<MasterStage> masterStages = new LinkedList<>();
+
     private InterStageStorage q01, q12; //, q23,q34,q45,q56;
     private InfiniteInboundStorage inboundItemStorage;
     private InfiniteOutboundStorage outboundItemStorage;
@@ -27,37 +29,31 @@ public class Simulation
         this.qMax = qMax;
 
         //Create and link simulation
-        s0 = new Stage(this.m, this.n, 1000, 1, this, "S0");
-        s1 = new Stage(this.m, this.n, 1, this, "S1");
-        s2 = new Stage(this.m, this.n, 10000, this, "S2");
+        s0a = new Stage(this.m, this.n, 1, 0, this, "S0a");
+        s0b = new Stage(this.m, this.n, 2, 1, this, "S0b");
+        s1a = new Stage(this.m, this.n, 1000, this, "S1a");
+        s2a = new Stage(this.m, this.n, 10000, this, "S2a");
+
+        //Add substages to each master stage
+        s0.addSubStage(s0a);
+        s0.addSubStage(s0b);
+
+        s1.addSubStage(s1a);
+
+        s2.addSubStage(s2a);
 
 
-        s0.addStages(null, s1);
-        s1.addStages(s0, s2);
-        s2.addStages(s1, null);
+        //Link master stages
+        s0.setForwardMasterStage(s1);
 
-        //s2, s3, s4, s5, s6;
-        stages.addLast(s0);
-        stages.addLast(s1);
-        stages.addLast(s2);
+        s1.setForwardMasterStage(s2);
+        s1.setBackwardMasterStage(s0);
 
-        /*s2 = new Stage(this.m, this.n, 1);
-        s3 = new Stage(this.m, this.n, 2);
-        s4 = new Stage(this.m, this.n, 1);
-        s5 = new Stage(this.m, this.n, 2);
-        s6 = new Stage(this.m, this.n, 1);*/
-
+        s2.setBackwardMasterStage(s1);
 
         //Link Queue to stage
         q01 = new InterStageStorage(qMax, s0, s1, "q01");
         q12 = new InterStageStorage(qMax, s1, s2, "q12");
-
-        //todo implement interstagestorage constructor for LL
-        /*
-        q23 = new InterStageStorage(qMax, s3, s2);
-        q34 = new InterStageStorage(qMax, s4, s3);
-        q45 = new InterStageStorage(qMax, s5, s4);
-        q56 = new InterStageStorage(qMax, s6, s5);*/
 
         inboundItemStorage = new InfiniteInboundStorage(null, s0, this, "Infinite Inbound");
         outboundItemStorage = new InfiniteOutboundStorage(s2, null, "Infinite Outbound");
@@ -86,32 +82,36 @@ public class Simulation
     {
         while (currentSimulationTime <= MAX_SIMULATION_TIME)
         {
-            for(Stage s: stages)
+            for(MasterStage m: masterStages)
             {
-                //If the stage is empty
-                if(s.isEmpty() || s.isStarved())
+                for(Stage s: m.getSubstages())
                 {
-                    // unstare to get back into empty state. otherwise, we can't take from inbound queue
-                    // due to precondition checks
-                    if (s.isStarved())
-                        s.unstarve();
+                    //If the stage is empty
+                    if(s.isEmpty() || s.isStarved())
+                    {
+                        // unstare to get back into empty state. otherwise, we can't take from inbound queue
+                        // due to precondition checks
+                        if (s.isStarved())
+                            s.unstarve();
 
-                    s.retrieveItemFromInboundStorage();
-                    //Depending on the queue setup it will generate a new item
-                    // for the first stage or pass through an item from a queue
+                        s.retrieveItemFromInboundStorage();
+                        //Depending on the queue setup it will generate a new item
+                        // for the first stage or pass through an item from a queue
 
-                    if (s.isReady())
-                        s.startProcessingItem();
+                        if (s.isReady())
+                            s.startProcessingItem();
+                    }
+                    else
+                    {
+                        //Stage is not empty
+                        checkStageContents(s);
+                    }
                 }
-                else
-                {
-                    //Stage is not empty
-                    checkStageContents(s);
-                }
-            }
 
-            // All stages updated. Get the next event time.
-            // this will be the minimum value in the priority queue
+                // All stages updated. Get the next event time.
+                // this will be the minimum value in the priority queue
+                }
+
             currentSimulationTime = priorityQueue.remove(); //Update current time
         }
     }

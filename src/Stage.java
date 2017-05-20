@@ -175,7 +175,12 @@ public class Stage
             else
             {
                 //Take item from inbound queue ready for processing
-                this.item = inboundStorage.dequeue();
+                if(inboundStorage instanceof InfiniteInboundStorage)
+                {
+                    this.item = ((InfiniteInboundStorage) inboundStorage).dequeueWithStageID(this.stageID);
+                }
+                else
+                    this.item = inboundStorage.dequeue();
 
                 //State ready for processing
                 state = StageStates.READY;

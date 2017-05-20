@@ -7,16 +7,15 @@ public class InfiniteInboundStorage extends InterStageStorage
     private Simulation simulation;
 
     /**InfiniteInboundStorage inbound = new InfiniteInboundStorage(null, s0)**/
-    public InfiniteInboundStorage(Stage inboundStage, Stage outboundStage, Simulation simulation, String name)
+    public InfiniteInboundStorage(MasterStage inboundStage, MasterStage outboundStage, Simulation simulation, String name)
     {
         super(inboundStage, outboundStage, name);
         this.simulation = simulation;
     }
 
-    @Override
-    public Item dequeue()
+    public Item dequeueWithStageID(int id)
     {
-        return new Item(outboundStage.getStageID(), simulation.getCurrentSimulationTime());
+        return new Item(id, simulation.getCurrentSimulationTime());
     }
 
     @Override
