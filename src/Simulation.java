@@ -11,7 +11,7 @@ public class Simulation
     private int qMax;
 
     private Stage s0a, s0b, s1a, s2a; //s3,s4,s5,s6;
-    private MasterStage s0, s1, s2;
+    private MasterStage s0 = new MasterStage(), s1 = new MasterStage(), s2 = new MasterStage();
     private LinkedList<MasterStage> masterStages = new LinkedList<>();
 
     private InterStageStorage q01, q12; //, q23,q34,q45,q56;
@@ -30,20 +30,19 @@ public class Simulation
 
         //Create and link simulation
         s0a = new Stage(this.m, this.n, 1, 0, this, "S0a");
-        s0b = new Stage(this.m, this.n, 2, 1, this, "S0b");
+        //s0b = new Stage(this.m, this.n, 2, 1, this, "S0b");
         s1a = new Stage(this.m, this.n, 1000, this, "S1a");
         s2a = new Stage(this.m, this.n, 10000, this, "S2a");
 
         //Add substages to each master stage
         s0.addSubStage(s0a);
-        s0.addSubStage(s0b);
+       // s0.addSubStage(s0b);
 
         s1.addSubStage(s1a);
 
         s2.addSubStage(s2a);
 
-
-        //Link master stages
+        //Link master stages and its substages
         s0.setForwardMasterStage(s1);
 
         s1.setForwardMasterStage(s2);
@@ -67,6 +66,10 @@ public class Simulation
 
         s2.setInboundStorage(q12);
         s2.setOutboundStorage(outboundItemStorage);
+
+        masterStages.addLast(s0);
+        masterStages.addLast(s1);
+        masterStages.addLast(s2);
     }
 
     public double getCurrentSimulationTime() {
@@ -165,19 +168,23 @@ public class Simulation
 
     private void checkForwardStage(Stage s)
     {
-        Stage forwardStage = s.getForwardStage();
+        MasterStage forwardStage = s.getParent().getForwardMasterStage();
         if(forwardStage != null)
         {
-            //Accounting for the last stage in the production line
-            if(forwardStage.isEmpty() || forwardStage.isStarved())
+            for(Stage substage: forwardStage.getSubstages())
             {
-                forceUnblock(s, forwardStage);
+                //Accounting for the last stage in the production line
+                if(substage.isEmpty() || substage.isStarved())
+                {
+                    forceUnblock(s, substage);
+                }
+
+                if (substage.stageIsFinished() && !substage.isBlocked()) // currentTime >= finishTime
+                {
+                    finishProcessingForwardStage(substage);
+                }
             }
 
-            if (forwardStage.stageIsFinished() && !forwardStage.isBlocked()) // currentTime >= finishTime
-            {
-               finishProcessingForwardStage(forwardStage);
-            }
         }
     }
 
@@ -219,15 +226,20 @@ public class Simulation
         forwardStage.startProcessingItem();
 
         // there is now space in our outbound storage queue to send our item onwards
-        Stage previousStage = forwardStage.getBackwardStage();
-        if(previousStage != null && previousStage.isBlocked())
+        MasterStage previousStage = forwardStage.getParent().getBackwardMasterStage();
+        if(previousStage != null)
         {
-            previousStage.unblock();
-            previousStage.sendToOutboundStorage();
+            for(Stage substage: previousStage.getSubstages())
+            {
+                if(substage.isBlocked())
+                {
+                    substage.unblock();
+                    substage.sendToOutboundStorage();
 
-            // we should now be in the empty state
-            unblockPreviousStages(previousStage);
-
+                    // we should now be in the empty state
+                    unblockPreviousStages(substage);
+                }
+            }
         }
     }
 }

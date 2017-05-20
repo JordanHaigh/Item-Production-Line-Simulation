@@ -16,6 +16,7 @@ public class MasterStage
 
     public void addSubStage(Stage stage)
     {
+        stage.setParent(this);
         substages.addLast(stage);
     }
 
@@ -23,7 +24,8 @@ public class MasterStage
         return forwardMasterStage;
     }
 
-    public void setForwardMasterStage(MasterStage forwardMasterStage) {
+    public void setForwardMasterStage(MasterStage forwardMasterStage)
+    {
         this.forwardMasterStage = forwardMasterStage;
     }
 
@@ -31,7 +33,8 @@ public class MasterStage
         return backwardMasterStage;
     }
 
-    public void setBackwardMasterStage(MasterStage backwardMasterStage) {
+    public void setBackwardMasterStage(MasterStage backwardMasterStage)
+    {
         this.backwardMasterStage = backwardMasterStage;
     }
 
@@ -39,8 +42,13 @@ public class MasterStage
         return inboundStorage;
     }
 
-    public void setInboundStorage(InterStageStorage inboundStorage) {
+    public void setInboundStorage(InterStageStorage inboundStorage)
+    {
         this.inboundStorage = inboundStorage;
+        for(Stage s: this.getSubstages())
+        {
+            s.setInboundStorage(inboundStorage);
+        }
     }
 
     public InterStageStorage getOutboundStorage() {
@@ -49,5 +57,9 @@ public class MasterStage
 
     public void setOutboundStorage(InterStageStorage outboundStorage) {
         this.outboundStorage = outboundStorage;
+        for(Stage s: this.getSubstages())
+        {
+            s.setOutboundStorage(outboundStorage);
+        }
     }
 }

@@ -19,9 +19,7 @@ public class Stage
     private InterStageStorage inboundStorage;
     private InterStageStorage outboundStorage;
 
-
-    private Stage forwardStage;
-    private Stage backwardStage;
+    private  MasterStage parent;
 
 
     /*Passing simulation through to access currentSimulationTime*/
@@ -72,15 +70,12 @@ public class Stage
 
     public double getFinishProcessingTime(){return finishProcessingTime; }
 
-    public Stage getForwardStage() {return forwardStage; }
+    public MasterStage getParent() {
+        return parent;
+    }
 
-    public Stage getBackwardStage() {return backwardStage; }
-
-
-    public void addStages(Stage backwardStage, Stage forwardStage)
-    {
-        this.backwardStage = backwardStage;
-        this.forwardStage = forwardStage;
+    public void setParent(MasterStage parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -226,6 +221,7 @@ public class Stage
             }
         }
     }
+
 
 
 }
