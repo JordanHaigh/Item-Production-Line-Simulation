@@ -8,7 +8,12 @@ public class MasterStage
     private LinkedList<Stage> substages =  new LinkedList<>();
     private MasterStage forwardMasterStage, backwardMasterStage;
     private InterStageStorage inboundStorage, outboundStorage;
+    private String name;
 
+    public MasterStage(String name)
+    {
+        this.name = name;
+    }
 
     public LinkedList<Stage> getSubstages() {
         return substages;
@@ -61,5 +66,16 @@ public class MasterStage
         {
             s.setOutboundStorage(outboundStorage);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(" [");
+        for(Stage s: this.getSubstages())
+            sb.append(s.getName()).append(" ");
+        sb.append("]");
+        return sb.toString();
     }
 }

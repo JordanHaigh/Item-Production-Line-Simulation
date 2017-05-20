@@ -11,7 +11,7 @@ public class Simulation
     private int qMax;
 
     private Stage s0a, s0b, s1a, s2a; //s3,s4,s5,s6;
-    private MasterStage s0 = new MasterStage(), s1 = new MasterStage(), s2 = new MasterStage();
+    private MasterStage s0 = new MasterStage("s0"), s1 = new MasterStage("s1"), s2 = new MasterStage("s2");
     private LinkedList<MasterStage> masterStages = new LinkedList<>();
 
     private InterStageStorage q01, q12; //, q23,q34,q45,q56;
@@ -30,13 +30,13 @@ public class Simulation
 
         //Create and link simulation
         s0a = new Stage(this.m, this.n, 1, 0, this, "S0a");
-        //s0b = new Stage(this.m, this.n, 2, 1, this, "S0b");
-        s1a = new Stage(this.m, this.n, 1000, this, "S1a");
-        s2a = new Stage(this.m, this.n, 10000, this, "S2a");
+        s0b = new Stage(this.m, this.n, 10, 1, this, "S0b");
+        s1a = new Stage(this.m, this.n, 100, this, "S1a");
+        s2a = new Stage(this.m, this.n, 1000, this, "S2a");
 
         //Add substages to each master stage
         s0.addSubStage(s0a);
-       // s0.addSubStage(s0b);
+        s0.addSubStage(s0b);
 
         s1.addSubStage(s1a);
 
@@ -236,8 +236,11 @@ public class Simulation
                     substage.unblock();
                     substage.sendToOutboundStorage();
 
-                    // we should now be in the empty state
-                    unblockPreviousStages(substage);
+                    // if this was a single substage master stage, then we should be in the empty state
+                    // but if we are in a multiple substage master stage, then we can still be blocked.
+                    // There is no point in attempting to unblock any previous stages from here, if we are blocked
+                    if (!substage.isBlocked())
+                        unblockPreviousStages(substage);
                 }
             }
         }

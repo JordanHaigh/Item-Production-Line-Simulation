@@ -78,9 +78,14 @@ public class Stage
         this.parent = parent;
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
     @Override
     public String toString() {
-        return this.name + " [" + this.state + "]" + (isProcessing() ? " (Finishes at " + finishProcessingTime + ")": "");
+        return getName() + " [" + this.state + "]" + (isProcessing() ? " (Finishes at " + finishProcessingTime + ")": "");
     }
 
 
