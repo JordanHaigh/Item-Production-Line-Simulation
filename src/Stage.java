@@ -1,4 +1,3 @@
-import java.nio.channels.IllegalChannelGroupException;
 import java.util.Random;
 
 /**
@@ -9,6 +8,8 @@ public class Stage
     private double m;
     private double n;
     private int multiplier;
+
+    private String name;
 
     private int stageID;
     private double p;
@@ -27,22 +28,21 @@ public class Stage
     private Simulation simulation;
     private double finishProcessingTime;
 
-    public Stage(double m, double n, int multiplier, Simulation simulation, Stage forwardStage, Stage backwardStage)
+    public Stage(double m, double n, int multiplier, Simulation simulation, String name)
     {
         this.m = m;
         this.n = n;
         this.multiplier = multiplier;
         state = StageStates.STARVED;
         this.simulation = simulation;
-        this.forwardStage = forwardStage;
-        this.backwardStage = backwardStage;
+        this.name = name;
     }
 
-    public Stage(double m, double n, int multiplier, int stageID, Simulation simulation, Stage forwardStage, Stage backwardStage)
+    public Stage(double m, double n, int multiplier, int stageID, Simulation simulation, String name)
     {
         //Since stag id is being passed through, we know that it will be one of the starting stages
         //Therefore the state should start at empty
-        this(m, n, multiplier, simulation, forwardStage, backwardStage);
+        this(m, n, multiplier, simulation, name);
         this.stageID = stageID;
         state = StageStates.EMPTY;
     }
@@ -76,6 +76,19 @@ public class Stage
 
     public Stage getBackwardStage() {return backwardStage; }
 
+
+    public void addStages(Stage backwardStage, Stage forwardStage)
+    {
+        this.backwardStage = backwardStage;
+        this.forwardStage = forwardStage;
+    }
+
+    @Override
+    public String toString() {
+        return this.name + " [" + this.state + "]" + (isProcessing() ? " (Finishes at " + finishProcessingTime + ")": "");
+    }
+
+
     /**
      * Calculation
      */
@@ -83,7 +96,11 @@ public class Stage
     {
         Random r = new Random();
         double d = r.nextDouble();
-        return (m * multiplier) + ((n * multiplier) * (d - 0.5));
+
+        // TODO: Remove fake number and replace with actual function
+        return multiplier;
+
+        //return (m * multiplier) + ((n * multiplier) * (d - 0.5));
     }
 
 
@@ -117,7 +134,7 @@ public class Stage
         //calc p value for random - as per spec
         p = calculatePValue();
         finishProcessingTime = simulation.getCurrentSimulationTime() + p;
-        simulation.addToPriorityQueue(finishProcessingTime);
+        simulation.notifyOfFinishProcessingTime(finishProcessingTime);
     }
 
     public void finishProcessingItem()
@@ -204,4 +221,6 @@ public class Stage
             }
         }
     }
+
+
 }

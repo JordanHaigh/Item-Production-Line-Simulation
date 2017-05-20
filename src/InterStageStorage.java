@@ -11,20 +11,22 @@ public class InterStageStorage
     protected int qMax;
     protected Stage inboundStage;
     protected Stage outboundStage;
+    protected String name;
 
     //Used for InfiniteStorage Classes
-    public InterStageStorage(Stage inboundStage, Stage outboundStage)
+    public InterStageStorage(Stage inboundStage, Stage outboundStage, String name)
     {
         this.inboundStage = inboundStage;
         this.outboundStage = outboundStage;
+        this.name = name;
     }
 
 
-    public InterStageStorage(int qMax, Stage inboundStage, Stage outboundStage)
+    public InterStageStorage(int qMax, Stage inboundStage, Stage outboundStage, String name)
     {
+        this(inboundStage, outboundStage, name);
+
         this.qMax = qMax;
-        this.inboundStage = inboundStage;
-        this.outboundStage = outboundStage;
     }
 
     public void enqueue(Item item)
@@ -50,5 +52,14 @@ public class InterStageStorage
     public boolean isEmpty()
     {
         return list.size() == 0;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.name +
+            (isEmpty() ? " [Empty]" :
+                    (isFull() ? " [Full]" :
+                            " Holding " + size() + " items"));
     }
 }

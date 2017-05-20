@@ -7,9 +7,9 @@ public class InfiniteInboundStorage extends InterStageStorage
     private Simulation simulation;
 
     /**InfiniteInboundStorage inbound = new InfiniteInboundStorage(null, s0)**/
-    public InfiniteInboundStorage(Stage inboundStage, Stage outboundStage, Simulation simulation)
+    public InfiniteInboundStorage(Stage inboundStage, Stage outboundStage, Simulation simulation, String name)
     {
-        super(inboundStage, outboundStage);
+        super(inboundStage, outboundStage, name);
         this.simulation = simulation;
     }
 
