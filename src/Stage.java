@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.channels.IllegalChannelGroupException;
 import java.util.Random;
 
 /**
@@ -14,30 +13,36 @@ public class Stage
     private int stageID;
     private double p;
     private StageStates state;
+    private Item item;
 
     private InterStageStorage inboundStorage;
     private InterStageStorage outboundStorage;
 
 
+    private Stage forwardStage;
+    private Stage backwardStage;
+
+
     /*Passing simulation through to access currentSimulationTime*/
     private Simulation simulation;
-    private double currentSimulationTime;
-    private double finishSimulationTime;
+    private double finishProcessingTime;
 
-    public Stage(double m, double n, int multiplier, Simulation simulation)
+    public Stage(double m, double n, int multiplier, Simulation simulation, Stage forwardStage, Stage backwardStage)
     {
         this.m = m;
         this.n = n;
         this.multiplier = multiplier;
         state = StageStates.STARVED;
         this.simulation = simulation;
+        this.forwardStage = forwardStage;
+        this.backwardStage = backwardStage;
     }
 
-    public Stage(double m, double n, int multiplier, int stageID, Simulation simulation)
+    public Stage(double m, double n, int multiplier, int stageID, Simulation simulation, Stage forwardStage, Stage backwardStage)
     {
         //Since stag id is being passed through, we know that it will be one of the starting stages
         //Therefore the state should start at empty
-        this(m, n, multiplier, simulation);
+        this(m, n, multiplier, simulation, forwardStage, backwardStage);
         this.stageID = stageID;
         state = StageStates.EMPTY;
     }
@@ -64,6 +69,12 @@ public class Stage
     public int getStageID() {
         return stageID;
     }
+
+    public double getFinishProcessingTime(){return finishProcessingTime; }
+
+    public Stage getForwardStage() {return forwardStage; }
+
+    public Stage getBackwardStage() {return backwardStage; }
 
     /**
      * Calculation
@@ -93,48 +104,50 @@ public class Stage
 
     public boolean isEmpty() {return state.equals(StageStates.EMPTY); }
 
+    public boolean isReady() {return state.equals(StageStates.READY); }
+
     public boolean isFinishedProcessing() {return state.equals(StageStates.FINISHEDPROCESSING); }
 
-    public void startProcessingItem(Item item)
+    public boolean stageIsFinished() { return simulation.getCurrentSimulationTime() >= finishProcessingTime; }
+
+    public void startProcessingItem()
     {
         state = StageStates.PROCESSING;
 
         //calc p value for random - as per spec
         p = calculatePValue();
-        finishSimulationTime = simulation.getCurrentSimulationTime() + p;
-        simulation.addToPriorityQueue(finishSimulationTime);
+        finishProcessingTime = simulation.getCurrentSimulationTime() + p;
+        simulation.addToPriorityQueue(finishProcessingTime);
     }
 
-    public void finishProcessingItem(Item item, double currentSimulationTime)
+    public void finishProcessingItem()
     {
-        //Where currentTime >= finishTime
-        if(currentSimulationTime >= finishSimulationTime && isProcessing())
-        {
-            state = StageStates.FINISHEDPROCESSING;
+        state = StageStates.FINISHEDPROCESSING;
 
-            sendToOutboundStorage(item);
-            //retrieveItemFromInboundStorage();
-        }
     }
 
     public void starve()
     {
         //Inbound Queue is Empty = starve()
-        state = StageStates.STARVED;
+        if(isEmpty())
+            state = StageStates.STARVED;
+        else
+            throw new IllegalStateException("Trying to starve when the state is not empty");
     }
 
-/*    public void unstarve()
+    public void unstarve()
     {
-        state = StageStates.EMPTY;
+        if(isStarved())
+            state = StageStates.EMPTY;
+        else
+            throw new IllegalStateException("Trying to unstarve when the state is not starving");
+    }
 
-        retrieveItemFromInboundStorage();
-    }*/
-
-    public Item retrieveItemFromInboundStorage()
+    public void retrieveItemFromInboundStorage()
     {
         if(!isEmpty())
         {
-            throw new RuntimeException("Trying to add item to a stage that is processing");
+            throw new IllegalStateException("Trying to add item to a stage that is processing");
         }
         else
         {
@@ -145,15 +158,12 @@ public class Stage
             else
             {
                 //Take item from inbound queue ready for processing
-                Item newItem = inboundStorage.dequeue();
+                this.item = inboundStorage.dequeue();
 
                 //State ready for processing
                 state = StageStates.READY;
-                return newItem;
-                //startProcessingItem(newItem);
             }
         }
-        return null;//Will not reach this part of the method
     }
 
     public void block()
@@ -163,27 +173,35 @@ public class Stage
         state = StageStates.BLOCKED;
     }
 
-/*    public void unblock(Item item)
+    public void unblock()
     {
         //Outbound Queue is not full
-        state = StageStates.FINISHEDPROCESSING;
+        if(isBlocked())
+            state = StageStates.FINISHEDPROCESSING;
+        else
+            throw new IllegalStateException("Trying to unblock when the state is not blocked");
 
-        sendToOutboundStorage(item);
-    }*/
+    }
 
-    public void sendToOutboundStorage(Item item)
+    public void sendToOutboundStorage()
     {
         //Stage is Empty
         //Finished processing - move item to following queue
-
-        if (outboundStorage.isFull())
-            block();
+        if(!isFinishedProcessing())
+        {
+            throw new IllegalStateException("Item has not finished processing");
+        }
         else
         {
-            //Item can be enqueued in the following queue
-            outboundStorage.enqueue(item);
-            //Set state back to empty
-            state = StageStates.EMPTY;
+            if (outboundStorage.isFull())
+                block();
+            else
+            {
+                //Item can be enqueued in the following queue
+                outboundStorage.enqueue(item);
+                //Set state back to empty
+                state = StageStates.EMPTY;
+            }
         }
     }
 }

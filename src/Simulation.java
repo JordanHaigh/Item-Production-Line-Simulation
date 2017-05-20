@@ -27,8 +27,8 @@ public class Simulation
         this.qMax = qMax;
 
         //Create and link simulation
-        s0 = new Stage(this.m, this.n, 1, 1, this);
-        s1 = new Stage(this.m, this.n, 1, this);
+        s0 = new Stage(this.m, this.n, 1, 1, this, s1, null);
+        s1 = new Stage(this.m, this.n, 1, this, null, s0);
         //s2, s3, s4, s5, s6;
         stages.addLast(s0);
         stages.addLast(s1);
@@ -73,52 +73,114 @@ public class Simulation
     {
         while (currentSimulationTime <= MAX_SIMULATION_TIME)
         {
-            /*if (s0.isEmpty())
+            for(Stage s: stages)
             {
-                Item item = s0.retrieveItemFromInboundStorage();
-                s0.startProcessingItem(item);
-
-                currentSimulationTime = priorityQueue.remove();
-
-                //Iterate over each stage in the linked list
-                for (Stage s : stages)
+                //If the stage is empty
+                if(s.isEmpty() || s.isStarved())
                 {
-                    //Determine whether a stage has finished processing
-                    s.finishProcessingItem(item, currentSimulationTime);
-                    //
+                    // unstare to get back into empty state. otherwise, we can't take from inbound queue
+                    // due to precondition checks
+                    if (s.isStarved())
+                        s.unstarve();
+
+                    s.retrieveItemFromInboundStorage();
+                    //Depending on the queue setup it will generate a new item
+                    // for the first stage or pass through an item from a queue
+
+                    if (s.isReady())
+                        s.startProcessingItem();
                 }
-            }*/ //TODO WROOOOOOONG
-
-
-            // prime s0a / s0b with items?
-            // add finish times to queue
-            //currenttime =  queue.dequeue
-
-/*            while loop  curernttime <  10 million
-            {
-                for each loop over all stages first
+                //Stage is not empty
+                else
                 {
-                    check if s is currently empty
-                    s.retrieve from inbound if not empty
-                    //depending on the queue setup it will generate a new item for the first stage or pass through an item from a queue
+                    //Something is inside the stage
+                    //Could be processing, finished processing, could be blocked
+                    if(s.isProcessing())
+                    {
+                        //Check if the current time is greater than the finish item time
+                        if(s.stageIsFinished())
+                        {
+                            //Update the state - If Statements will chain downwards when state is updated
+                            s.finishProcessingItem();
+                        }
+                    }
 
-                    if simulation.currenttime == stage.finishtime
-                    finish processing item and send it on to the queue
+                    if(s.isFinishedProcessing())
+                    {
+                        //Item finished processing, send to outbound storage if there is a position available
+                        s.sendToOutboundStorage(); //Stage may be set to BLOCKED if there is no availability
 
-                    //stages need to talk to each other
-                    //stage private variables in the stage class to determine backwards and forwards? YES
-                    //todo see book
+                        // s is now empty and could take an item from it's inbound queue immediately
+                        // and start reprocessing
+                        // if the inbound queue is empty, s will starve
+                        if (!s.isBlocked())
+                        {
+                            s.retrieveItemFromInboundStorage();
 
+                            if (s.isReady())
+                                s.startProcessingItem();
+                        }
+                    }
+
+                    if(s.isBlocked())
+                    {
+                        //Stage is blocked, we can't add an item to the forward queue
+                        //Check stage in front to determine whether it is not holding an item
+                        Stage forwardStage = s.getForwardStage();
+
+                        //Accounting for the last stage in the production line
+                        if(forwardStage.isEmpty() || forwardStage.isStarved())
+                        {
+                            //The forward stage can take an item from the intermediate queue and free a position
+                            // for the current stage to enqueue
+                            forwardStage.retrieveItemFromInboundStorage();
+
+                            //Now the current stage is able to pass the object
+                            s.unblock();
+                            s.sendToOutboundStorage(); //The current stage will now be set to empty
+
+                            //Now need to recursively move backwards in the from the current stage to determine whether
+                            //Previous stages can unblock if necessary
+                        }
+                        if (forwardStage.stageIsFinished() && !forwardStage.isBlocked()) // currentTime >= finishTime
+                        {
+                            forwardStage.finishProcessingItem();
+
+                            // we can now move the item in the forward stage to the outbound storage, if it is empty
+                            forwardStage.sendToOutboundStorage();
+
+                            // forward stage is now either empty, or blocked
+                            if (!forwardStage.isBlocked())
+                            {
+                                unblockPreviousStages(forwardStage);
+                            }
+                        }
+
+                    }
 
                 }
-                DING DONG the current time has been updated!
-            }*/
+            }
 
+            currentSimulationTime = priorityQueue.remove(); //Update current time
+        }
+    }
 
+    private void unblockPreviousStages(Stage forwardStage)
+    {
+        // forward stage is now empty and can attempt to take from it's inbound storage
+        // which must be full, because we are currently blocked
+        forwardStage.retrieveItemFromInboundStorage();
+        forwardStage.startProcessingItem();
 
+        // there is now space in our outbound storage queue to send our item onwards
+        Stage previousStage = forwardStage.getBackwardStage();
+        if(previousStage != null && previousStage.isBlocked())
+        {
+            previousStage.unblock();
+            previousStage.sendToOutboundStorage();
 
-
-
+            // we should now be in the empty state
+            unblockPreviousStages(previousStage);
 
         }
     }
