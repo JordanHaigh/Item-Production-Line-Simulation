@@ -20,8 +20,12 @@ public class Stage implements Comparable<Stage>
     private InterStageStorage inboundStorage;
     private InterStageStorage outboundStorage;
 
-    private  MasterStage parent;
+    private MasterStage parent;
 
+
+    private int itemCreationTally = 0;
+    private double timeStartProcessing;
+    private double timeFinishedProcessing;
 
     /*Passing simulation through to access currentSimulationTime*/
     private Simulation simulation;
@@ -136,6 +140,12 @@ public class Stage implements Comparable<Stage>
         p = calculatePValue();
         finishProcessingTime = simulation.getCurrentSimulationTime() + p;
         simulation.notifyOfFinishProcessingTime(finishProcessingTime);
+
+        System.out.println(String.format("Time %1$s: Stage %2$s starting processing. Will complete at %3$s",
+                simulation.getCurrentSimulationTime(), this.name, finishProcessingTime));
+
+        timeStartProcessing = simulation.getCurrentSimulationTime();
+
     }
 
     public void finishProcessingItem()
@@ -165,7 +175,7 @@ public class Stage implements Comparable<Stage>
     {
         if(!isEmpty())
         {
-            throw new IllegalStateException("Trying to add item to a stage that is processing");
+            throw new IllegalStateException("Trying to add item to a stage that is in the " + state.name() + " state");
         }
         else
         {
@@ -175,14 +185,19 @@ public class Stage implements Comparable<Stage>
             }
             else
             {
+
                 //Take item from inbound queue ready for processing
                 if(inboundStorage instanceof InfiniteInboundStorage)
                 {
                     //typecast to access the dequeue with stage id method
                     this.item = ((InfiniteInboundStorage) inboundStorage).dequeueWithStageID(this.stageID);
+                    itemCreationTally++;
                 }
                 else
                     this.item = inboundStorage.dequeue();
+
+                System.out.println(String.format("Time %1$s: Stage %2$s taking item %3$s from InterStage Storage Queue %4$s",
+                        simulation.getCurrentSimulationTime(), this.name, item.getUniqueID(), inboundStorage.getName()));
 
                 //State ready for processing
                 state = StageStates.READY;
@@ -225,6 +240,10 @@ public class Stage implements Comparable<Stage>
                 block();
             else
             {
+
+                System.out.println(String.format("Time %1$s: Stage %2$s sending item %3$s to InterStage Storage Queue %4$s",
+                        simulation.getCurrentSimulationTime(), this.name, item.getUniqueID(), outboundStorage.getName()));
+
                 //Item can be enqueued in the following queue
                 outboundStorage.enqueue(item);
                 //Set state back to empty

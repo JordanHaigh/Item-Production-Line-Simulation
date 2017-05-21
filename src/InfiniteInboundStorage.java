@@ -15,7 +15,10 @@ public class InfiniteInboundStorage extends InterStageStorage
 
     public Item dequeueWithStageID(int id)
     {
-        return new Item(id, simulation.getCurrentSimulationTime());
+        Item newItem = new Item(id, simulation.getCurrentSimulationTime());
+        System.out.println(String.format("Time %1$s: Generating a new Item with id %2$s",
+                simulation.getCurrentSimulationTime(), newItem.getUniqueID()));
+        return newItem;
     }
 
     @Override

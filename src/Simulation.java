@@ -10,11 +10,17 @@ public class Simulation
     private double m, n;
     private int qMax;
 
-    private Stage s0a, s0b, s1a, s2a; //s3,s4,s5,s6;
-    private MasterStage s0 = new MasterStage("s0"), s1 = new MasterStage("s1"), s2 = new MasterStage("s2");
+    private Stage s0a, s0b, s1a, s2a, s3a, s3b, s4a, s5a, s5b, s6a;
+    private MasterStage s0 = new MasterStage("s0");
+    private MasterStage s1= new MasterStage("s1");
+    private MasterStage s2 = new MasterStage("s2");
+    private MasterStage s3 = new MasterStage("s3");
+    private MasterStage s4 = new MasterStage("s4");
+    private MasterStage s5 = new MasterStage("s5");
+    private MasterStage s6 = new MasterStage("s6");
     private LinkedList<MasterStage> masterStages = new LinkedList<>();
 
-    private InterStageStorage q01, q12; //, q23,q34,q45,q56;
+    private InterStageStorage q01, q12, q23,q34,q45,q56;
     private InfiniteInboundStorage inboundItemStorage;
     private InfiniteOutboundStorage outboundItemStorage;
 
@@ -29,10 +35,17 @@ public class Simulation
         this.qMax = qMax;
 
         //Create and link simulation
-        s0a = new Stage(this.m, this.n, 1, 0, this, "S0a");
-        s0b = new Stage(this.m, this.n, 10, 1, this, "S0b");
-        s1a = new Stage(this.m, this.n, 100, this, "S1a");
-        s2a = new Stage(this.m, this.n, 1000, this, "S2a");
+        s0a = new Stage(this.m, this.n, 100, 0, this, "S0a");
+        s0b = new Stage(this.m, this.n, 200, 1, this, "S0b");
+        s1a = new Stage(this.m, this.n, 300, this, "S1a");
+        s2a = new Stage(this.m, this.n, 400, this, "S2a");
+        s3a = new Stage(this.m, this.n, 500, this, "s3a");
+        s3b = new Stage(this.m, this.n, 600, this, "s3b");
+        s4a = new Stage(this.m, this.n, 700, this, "s4a");
+        s5a = new Stage(this.m, this.n, 800, this, "s5a");
+        s5b = new Stage(this.m, this.n, 900, this, "s5b");
+        s6a = new Stage(this.m, this.n, 1000, this, "s6a");
+
 
         //Add substages to each master stage
         s0.addSubStage(s0a);
@@ -42,20 +55,46 @@ public class Simulation
 
         s2.addSubStage(s2a);
 
+        s3.addSubStage(s3a);
+        s3.addSubStage(s3b);
+
+        s4.addSubStage(s4a);
+
+        s5.addSubStage(s5a);
+        s5.addSubStage(s5b);
+
+        s6.addSubStage(s6a);
+
         //Link master stages and its substages
         s0.setForwardMasterStage(s1);
 
         s1.setForwardMasterStage(s2);
         s1.setBackwardMasterStage(s0);
 
+        s2.setForwardMasterStage(s3);
         s2.setBackwardMasterStage(s1);
+
+        s3.setForwardMasterStage(s4);
+        s3.setBackwardMasterStage(s2);
+
+        s4.setForwardMasterStage(s5);
+        s4.setBackwardMasterStage(s3);
+
+        s5.setForwardMasterStage(s6);
+        s5.setBackwardMasterStage(s4);
+
+        s6.setBackwardMasterStage(s5);
 
         //Link Queue to stage
         q01 = new InterStageStorage(qMax, s0, s1, "q01");
         q12 = new InterStageStorage(qMax, s1, s2, "q12");
+        q23 = new InterStageStorage(qMax, s2, s3, "q23");
+        q34 = new InterStageStorage(qMax, s3, s4, "q34");
+        q45 = new InterStageStorage(qMax, s4, s5, "q45");
+        q56 = new InterStageStorage(qMax, s5, s6, "q56");
 
         inboundItemStorage = new InfiniteInboundStorage(null, s0, this, "Infinite Inbound");
-        outboundItemStorage = new InfiniteOutboundStorage(s2, null, "Infinite Outbound");
+        outboundItemStorage = new InfiniteOutboundStorage(s6, null, "Infinite Outbound");
 
         //Link Stages to Queues
         s0.setInboundStorage(inboundItemStorage);
@@ -65,11 +104,27 @@ public class Simulation
         s1.setOutboundStorage(q12);
 
         s2.setInboundStorage(q12);
-        s2.setOutboundStorage(outboundItemStorage);
+        s2.setOutboundStorage(q23);
+
+        s3.setInboundStorage(q23);
+        s3.setOutboundStorage(q34);
+
+        s4.setInboundStorage(q34);
+        s4.setOutboundStorage(q45);
+
+        s5.setInboundStorage(q45);
+        s5.setOutboundStorage(q56);
+
+        s6.setInboundStorage(q56);
+        s6.setOutboundStorage(outboundItemStorage);
 
         masterStages.addLast(s0);
         masterStages.addLast(s1);
         masterStages.addLast(s2);
+        masterStages.addLast(s3);
+        masterStages.addLast(s4);
+        masterStages.addLast(s5);
+        masterStages.addLast(s6);
     }
 
     public double getCurrentSimulationTime() {
@@ -121,6 +176,8 @@ public class Simulation
                 }
 
             currentSimulationTime = timePriorityQueue.remove(); //Update current time
+
+            System.out.println(String.format("=== Updating Time to %1$s ===", currentSimulationTime));
         }
     }
 
@@ -197,6 +254,9 @@ public class Simulation
     {
         //The forward stage can take an item from the intermediate queue and free a position
         // for the current stage to enqueue
+        if (forwardStage.isStarved())
+            forwardStage.unstarve();
+
         forwardStage.retrieveItemFromInboundStorage();
 
         //Now the current stage is able to pass the object
@@ -205,7 +265,8 @@ public class Simulation
 
         //Now need to recursively move backwards in the from the current stage to determine whether
         //Previous stages can unblock if necessary
-        unblockPreviousStages(s);
+        if (!s.isBlocked())
+            unblockPreviousStages(s);
     }
 
 

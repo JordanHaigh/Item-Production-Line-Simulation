@@ -54,6 +54,9 @@ public class InterStageStorage
         return list.size() == 0;
     }
 
+
+    public String getName() { return name; }
+
     @Override
     public String toString()
     {
