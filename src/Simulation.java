@@ -20,7 +20,7 @@ public class Simulation
 
     private double currentSimulationTime = 0; //Start at 0
     public final int MAX_SIMULATION_TIME = 10000000;
-    private PriorityQueue<Double> priorityQueue = new PriorityQueue<>();
+    private PriorityQueue<Double> timePriorityQueue = new PriorityQueue<>();
 
     public Simulation(double m, double n, int qMax)
     {
@@ -78,16 +78,21 @@ public class Simulation
 
     public void notifyOfFinishProcessingTime(double finishProcessingTime)
     {
-        priorityQueue.add(finishProcessingTime);
+        timePriorityQueue.add(finishProcessingTime);
     }
+
 
     public void startProcessing()
     {
+
+        //todo fix the parallel stages to eliminate priority on the a-stages
+        //todo when two parallel stages are blocked, stage a will take priority over stage b
+        ///todo may need a priorituy queue of items when this happens??
         while (currentSimulationTime <= MAX_SIMULATION_TIME)
         {
             for(MasterStage m: masterStages)
             {
-                for(Stage s: m.getSubstages())
+                for(Stage s: m.getSubstagesInOrder())
                 {
                     //If the stage is empty
                     if(s.isEmpty() || s.isStarved())
@@ -115,7 +120,7 @@ public class Simulation
                 // this will be the minimum value in the priority queue
                 }
 
-            currentSimulationTime = priorityQueue.remove(); //Update current time
+            currentSimulationTime = timePriorityQueue.remove(); //Update current time
         }
     }
 

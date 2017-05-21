@@ -1,9 +1,10 @@
+import java.util.Comparator;
 import java.util.Random;
 
 /**
  * Created by Jordan on 15-May-17.
  */
-public class Stage
+public class Stage implements Comparable<Stage>
 {
     private double m;
     private double n;
@@ -177,6 +178,7 @@ public class Stage
                 //Take item from inbound queue ready for processing
                 if(inboundStorage instanceof InfiniteInboundStorage)
                 {
+                    //typecast to access the dequeue with stage id method
                     this.item = ((InfiniteInboundStorage) inboundStorage).dequeueWithStageID(this.stageID);
                 }
                 else
@@ -192,7 +194,11 @@ public class Stage
     {
         //Item cannot be passed to the next queue because it is full
         //Needs to stay in the current stage until room is available
-        state = StageStates.BLOCKED;
+
+        if(isFinishedProcessing())
+            state = StageStates.BLOCKED;
+        else
+            throw new IllegalStateException("Trying to block from the incorrect state");
     }
 
     public void unblock()
@@ -224,6 +230,41 @@ public class Stage
                 //Set state back to empty
                 state = StageStates.EMPTY;
             }
+        }
+    }
+
+
+
+
+    public static Comparator<Stage> StageFinishTimeComparator = new Comparator<Stage>()
+    {
+        @Override
+        public int compare(Stage s1, Stage s2)
+        {
+            return s1.compareTo(s2);
+        }
+    };
+
+    @Override
+    public int compareTo(Stage stage)
+    {
+        double compareFinishTime = stage.getFinishProcessingTime();
+
+        //Since we are working with doubles for time, this needs to be typecasted for the overriden compareTo method
+        int result = (int)(this.getFinishProcessingTime() - compareFinishTime);
+        if(result < 0 || result > 0)
+            return result;
+        else
+        {
+            //If two stage times are equal (Result is zero), we sort by stageID's to determine which will come first
+            int compareStageID = stage.getStageID();
+
+            if(this.getStageID() < compareStageID)
+                return -1;
+            else if(this.getStageID() > compareStageID)
+                return 1;
+            else
+                return 0;
         }
     }
 
