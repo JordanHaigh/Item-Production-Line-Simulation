@@ -92,7 +92,7 @@ public class Simulation
         {
             for(MasterStage m: masterStages)
             {
-                for(Stage s: m.getSubstagesInOrder())
+                for(Stage s: m.getSubstagesInSortedOrder())
                 {
                     //If the stage is empty
                     if(s.isEmpty() || s.isStarved())
@@ -176,7 +176,7 @@ public class Simulation
         MasterStage forwardStage = s.getParent().getForwardMasterStage();
         if(forwardStage != null)
         {
-            for(Stage substage: forwardStage.getSubstages())
+            for(Stage substage: forwardStage.getSubstagesInSortedOrder())
             {
                 //Accounting for the last stage in the production line
                 if(substage.isEmpty() || substage.isStarved())
@@ -234,7 +234,7 @@ public class Simulation
         MasterStage previousStage = forwardStage.getParent().getBackwardMasterStage();
         if(previousStage != null)
         {
-            for(Stage substage: previousStage.getSubstages())
+            for(Stage substage: previousStage.getSubstagesInSortedOrder())
             {
                 if(substage.isBlocked())
                 {

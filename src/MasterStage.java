@@ -2,6 +2,7 @@
  * Created by Jordan on 20-May-17.
  */
 
+import java.util.Collections;
 import java.util.LinkedList;
 public class MasterStage
 {
@@ -15,8 +16,13 @@ public class MasterStage
         this.name = name;
     }
 
-    public LinkedList<Stage> getSubstages() {
-        return substages;
+    public LinkedList<Stage> getSubstages() { return substages; }
+
+    public LinkedList<Stage> getSubstagesInSortedOrder()
+    {
+        LinkedList<Stage> sortedStages  = new LinkedList<>(substages);
+        Collections.sort(sortedStages,Stage.StageFinishTimeComparator);
+        return sortedStages;
     }
 
     public void addSubStage(Stage stage)
