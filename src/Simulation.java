@@ -21,6 +21,7 @@ public class Simulation
     private LinkedList<MasterStage> masterStages = new LinkedList<>();
 
     private InterStageStorage q01, q12, q23,q34,q45,q56;
+    private LinkedList<InterStageStorage> queues = new LinkedList<>();
     private InfiniteInboundStorage inboundItemStorage;
     private InfiniteOutboundStorage outboundItemStorage;
 
@@ -86,15 +87,15 @@ public class Simulation
         s6.setBackwardMasterStage(s5);
 
         //Link Queue to stage
-        q01 = new InterStageStorage(qMax, s0, s1, "q01");
-        q12 = new InterStageStorage(qMax, s1, s2, "q12");
-        q23 = new InterStageStorage(qMax, s2, s3, "q23");
-        q34 = new InterStageStorage(qMax, s3, s4, "q34");
-        q45 = new InterStageStorage(qMax, s4, s5, "q45");
-        q56 = new InterStageStorage(qMax, s5, s6, "q56");
+        q01 = new InterStageStorage(qMax, s0, s1, this,"q01");
+        q12 = new InterStageStorage(qMax, s1, s2, this, "q12");
+        q23 = new InterStageStorage(qMax, s2, s3, this, "q23");
+        q34 = new InterStageStorage(qMax, s3, s4, this, "q34");
+        q45 = new InterStageStorage(qMax, s4, s5, this, "q45");
+        q56 = new InterStageStorage(qMax, s5, s6, this,"q56");
 
         inboundItemStorage = new InfiniteInboundStorage(null, s0, this, "Infinite Inbound");
-        outboundItemStorage = new InfiniteOutboundStorage(s6, null, "Infinite Outbound");
+        outboundItemStorage = new InfiniteOutboundStorage(s6, null, this,  "Infinite Outbound");
 
         //Link Stages to Queues
         s0.setInboundStorage(inboundItemStorage);
@@ -125,6 +126,14 @@ public class Simulation
         masterStages.addLast(s4);
         masterStages.addLast(s5);
         masterStages.addLast(s6);
+
+
+        queues.addLast(q01);
+        queues.addLast(q12);
+        queues.addLast(q23);
+        queues.addLast(q34);
+        queues.addLast(q45);
+        queues.addLast(q56);
     }
 
     public double getCurrentSimulationTime() {
@@ -335,10 +344,25 @@ public class Simulation
             }
         }
 
+        System.out.println();
+
         //Queue output
-        System.out.println("Queue output here\n");
+        System.out.println("Queue | TimeAverage \t | ItemAverage");
+        for(InterStageStorage q: queues)
+        {
+            System.out.println(
+                    q.getName() +
+                    "\t  | \t "
+                    + String.format("%.5f", calculateAverageItemTimeInQueue(q)) +
+                    "\t | \t "
 
 
+            );
+        }
+
+        System.out.println();
+
+        //S0 output
         for(Stage s: s0.getSubstages())
         {
             System.out.println("Items created in " + s.getName() + ": " + s.getItemCreationTally());
@@ -359,6 +383,11 @@ public class Simulation
     private double calculateStageBlockingTimePercentage(Stage s, double totalFinishTime)
     {
         return (s.getTimeFinishBlocking()/totalFinishTime) * 100;
+    }
+
+    private double calculateAverageItemTimeInQueue(InterStageStorage q)
+    {
+        return q.calculateAverageTimeInQueue(); //todo probs wrong
     }
 
 

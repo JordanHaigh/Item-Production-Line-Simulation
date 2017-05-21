@@ -12,19 +12,27 @@ public class InterStageStorage
     protected MasterStage inboundStage;
     protected MasterStage outboundStage;
     protected String name;
+    protected Simulation simulation;
+
+    private int totalNumItemsAddedToQueue = 0;
+    private int totalNumItemsRemovedFromQueue = 0;
+    private LinkedList<Double> queueStartTimes = new LinkedList<>();
+    private LinkedList<Double> queueFinishTimes = new LinkedList<>();
+    private LinkedList<Double> queueDifference = new LinkedList<>();
 
     //Used for InfiniteStorage Classes
-    public InterStageStorage(MasterStage inboundStage, MasterStage outboundStage, String name)
+    public InterStageStorage(MasterStage inboundStage, MasterStage outboundStage, Simulation simulation, String name)
     {
         this.inboundStage = inboundStage;
         this.outboundStage = outboundStage;
+        this.simulation = simulation;
         this.name = name;
     }
 
 
-    public InterStageStorage(int qMax, MasterStage inboundStage, MasterStage outboundStage, String name)
+    public InterStageStorage(int qMax, MasterStage inboundStage, MasterStage outboundStage, Simulation simulation, String name)
     {
-        this(inboundStage, outboundStage, name);
+        this(inboundStage, outboundStage, simulation, name);
 
         this.qMax = qMax;
     }
@@ -32,12 +40,36 @@ public class InterStageStorage
     public void enqueue(Item item)
     {
         list.add(item);
+        queueStartTimes.add(totalNumItemsAddedToQueue, simulation.getCurrentSimulationTime());
+        totalNumItemsAddedToQueue++;
+
+        //totalStartTimeOfItemsInQueue += simulation.getCurrentSimulationTime();
     }
 
     public Item dequeue()
     {
+        queueFinishTimes.add(totalNumItemsRemovedFromQueue, simulation.getCurrentSimulationTime());
+        totalNumItemsRemovedFromQueue++;
         return list.remove();
     }
+
+    public double calculateAverageTimeInQueue()
+    {
+        double totalTimeInQueue = 0;
+        for(int i = 0; i < totalNumItemsRemovedFromQueue; i++)
+        {
+            queueDifference.add(i, queueFinishTimes.get(i)-queueStartTimes.get(i));
+            totalTimeInQueue += queueDifference.get(i);
+        }
+
+        return totalTimeInQueue / totalNumItemsAddedToQueue;
+
+
+    }
+
+    public int getTotalNumItemsAddedToQueue() {return totalNumItemsAddedToQueue; }
+
+    public int getTotalNumItemsRemovedFromQueue() {return totalNumItemsRemovedFromQueue; }
 
     public int size()
     {

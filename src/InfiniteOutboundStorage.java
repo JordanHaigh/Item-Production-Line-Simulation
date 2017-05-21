@@ -10,8 +10,8 @@ public class InfiniteOutboundStorage extends InterStageStorage
     /**
      * InfiniteOutboundStorage outbound = new InfiniteOutboundStorage(s6, null)
      **/
-    public InfiniteOutboundStorage(MasterStage inboundStage, MasterStage outboundStage, String name) {
-        super(inboundStage, outboundStage, name);
+    public InfiniteOutboundStorage(MasterStage inboundStage, MasterStage outboundStage, Simulation simulation, String name) {
+        super(inboundStage, outboundStage, simulation, name);
     }
 
     @Override
