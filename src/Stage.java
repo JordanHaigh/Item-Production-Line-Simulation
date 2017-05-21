@@ -102,6 +102,7 @@ public class Stage implements Comparable<Stage>
 
     public double getTimeFinishBlocking() { return timeFinishBlocking; }
 
+    public int getItemCreationTally() { return itemCreationTally; }
     @Override
     public String toString() {
         return getName() + " [" + this.state + "]" + (isProcessing() ? " (Finishes at " + finishProcessingTime + ")": "");
@@ -153,19 +154,24 @@ public class Stage implements Comparable<Stage>
         //calc p value for random - as per spec
         p = calculatePValue();
         finishProcessingTime = simulation.getCurrentSimulationTime() + p;
+
         simulation.notifyOfFinishProcessingTime(finishProcessingTime);
 
         System.out.println(String.format("Time %1$s: Stage %2$s starting processing. Will complete at %3$s",
                 simulation.getCurrentSimulationTime(), this.name, finishProcessingTime));
 
         timeStartProcessing = simulation.getCurrentSimulationTime();
-
     }
 
     public void finishProcessingItem()
     {
-        state = StageStates.FINISHEDPROCESSING;
-        timeFinishedProcessing += simulation.getCurrentSimulationTime() - timeStartProcessing;
+        if(isProcessing())
+        {
+            state = StageStates.FINISHEDPROCESSING;
+            timeFinishedProcessing += simulation.getCurrentSimulationTime() - timeStartProcessing;
+        }
+        else
+            throw new IllegalStateException("Trying to finish processing when stage is in  " + state.name() + " state");
     }
 
     public void starve()

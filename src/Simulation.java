@@ -139,7 +139,7 @@ public class Simulation
 
     public void startProcessing()
     {
-
+        double tempRemoval;
         //todo fix the parallel stages to eliminate priority on the a-stages
         //todo when two parallel stages are blocked, stage a will take priority over stage b
         ///todo may need a priorituy queue of items when this happens??
@@ -173,11 +173,17 @@ public class Simulation
 
                 // All stages updated. Get the next event time.
                 // this will be the minimum value in the priority queue
-                }
-
-            currentSimulationTime = timePriorityQueue.remove(); //Update current time
-
-            System.out.println(String.format("=== Updating Time to %1$s ===", currentSimulationTime));
+            }
+            tempRemoval = timePriorityQueue.remove(); //Update current time
+            if(tempRemoval >=  MAX_SIMULATION_TIME)
+                break;
+            else
+            {
+                //todo ask Dan: If an item is created on the MAX_SIMULATION_TIME, should we continue processing it?
+                //todo aka tempRemoval >= MAX or temp > MAX
+                currentSimulationTime = tempRemoval;
+                System.out.println(String.format("=== Updating Time to %1$s ===", currentSimulationTime));
+            }
         }
     }
 
@@ -328,6 +334,16 @@ public class Simulation
                 );
             }
         }
+
+        //Queue output
+        System.out.println("Queue output here\n");
+
+
+        for(Stage s: s0.getSubstages())
+        {
+            System.out.println("Items created in " + s.getName() + ": " + s.getItemCreationTally());
+        }
+
     }
 
     private double calculateStageProcessingTimePercentage(Stage s, double totalFinishTime)
