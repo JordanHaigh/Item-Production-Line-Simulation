@@ -9,9 +9,10 @@ public class PA3
         // TODO: Read m, n, qMax from args[]
         // TODO: Check that args[] has enough supplied values. If not enough  values, throw error and end
 
-        Simulation simulation = new Simulation(10,10,2);
-        simulation.startProcessing();
+        Simulation simulation = new Simulation(10000,1000,2);
 
+        simulation.startProcessing();
+        simulation.runDataStatistics();
 
     }
 }

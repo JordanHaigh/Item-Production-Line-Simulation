@@ -11,13 +11,13 @@ public class Simulation
     private int qMax;
 
     private Stage s0a, s0b, s1a, s2a, s3a, s3b, s4a, s5a, s5b, s6a;
-    private MasterStage s0 = new MasterStage("s0");
-    private MasterStage s1= new MasterStage("s1");
-    private MasterStage s2 = new MasterStage("s2");
-    private MasterStage s3 = new MasterStage("s3");
-    private MasterStage s4 = new MasterStage("s4");
-    private MasterStage s5 = new MasterStage("s5");
-    private MasterStage s6 = new MasterStage("s6");
+    private MasterStage s0 = new MasterStage("s0M");
+    private MasterStage s1= new MasterStage("s1M");
+    private MasterStage s2 = new MasterStage("s2M");
+    private MasterStage s3 = new MasterStage("s3M");
+    private MasterStage s4 = new MasterStage("s4M");
+    private MasterStage s5 = new MasterStage("s5M");
+    private MasterStage s6 = new MasterStage("s6M");
     private LinkedList<MasterStage> masterStages = new LinkedList<>();
 
     private InterStageStorage q01, q12, q23,q34,q45,q56;
@@ -35,16 +35,16 @@ public class Simulation
         this.qMax = qMax;
 
         //Create and link simulation
-        s0a = new Stage(this.m, this.n, 100, 0, this, "S0a");
-        s0b = new Stage(this.m, this.n, 200, 1, this, "S0b");
-        s1a = new Stage(this.m, this.n, 300, this, "S1a");
-        s2a = new Stage(this.m, this.n, 400, this, "S2a");
-        s3a = new Stage(this.m, this.n, 500, this, "s3a");
-        s3b = new Stage(this.m, this.n, 600, this, "s3b");
-        s4a = new Stage(this.m, this.n, 700, this, "s4a");
-        s5a = new Stage(this.m, this.n, 800, this, "s5a");
-        s5b = new Stage(this.m, this.n, 900, this, "s5b");
-        s6a = new Stage(this.m, this.n, 1000, this, "s6a");
+        s0a = new Stage(this.m, this.n, 2, 0, this, "S0a");
+        s0b = new Stage(this.m, this.n, 1, 1, this, "S0b");
+        s1a = new Stage(this.m, this.n, 1, this, "S1");
+        s2a = new Stage(this.m, this.n, 1, this, "S2");
+        s3a = new Stage(this.m, this.n, 2, this, "s3a");
+        s3b = new Stage(this.m, this.n, 2, this, "s3b");
+        s4a = new Stage(this.m, this.n, 1, this, "s4");
+        s5a = new Stage(this.m, this.n, 2, this, "s5a");
+        s5b = new Stage(this.m, this.n, 2, this, "s5b");
+        s6a = new Stage(this.m, this.n, 1, this, "s6");
 
 
         //Add substages to each master stage
@@ -181,8 +181,6 @@ public class Simulation
         }
     }
 
-
-
     private void checkStageContents(Stage s)
     {
         //Something is inside the stage
@@ -269,7 +267,6 @@ public class Simulation
             unblockPreviousStages(s);
     }
 
-
     private void finishProcessingForwardStage(Stage forwardStage)
     {
         forwardStage.finishProcessingItem();
@@ -281,8 +278,6 @@ public class Simulation
         if (!forwardStage.isBlocked())
             unblockPreviousStages(forwardStage);
     }
-
-
 
     private void unblockPreviousStages(Stage forwardStage)
     {
@@ -311,4 +306,45 @@ public class Simulation
             }
         }
     }
+
+    public void runDataStatistics()
+    {
+        double totalFinishTime = getCurrentSimulationTime();
+
+        System.out.println("Station | %Processing \t | %Starving \t | %Blocked \t");
+
+        for(MasterStage m: masterStages)
+        {
+            for(Stage s: m.getSubstages())
+            {
+                System.out.println(
+                        s.getName() +
+                        "\t \t| \t " +
+                        String.format("%.5f",calculateStageProcessingTimePercentage(s, totalFinishTime)) +
+                        "\t | \t " +
+                        String.format("%.5f",calculateStageStarvingTimePercentage(s, totalFinishTime)) +
+                        "\t | \t " +
+                        String.format("%.5f",calculateStageBlockingTimePercentage(s, totalFinishTime))
+                );
+            }
+        }
+    }
+
+    private double calculateStageProcessingTimePercentage(Stage s, double totalFinishTime)
+    {
+        return (s.getTimeFinishedProcessing()/totalFinishTime) * 100;
+    }
+
+    private double calculateStageStarvingTimePercentage(Stage s, double totalFinishTime)
+    {
+        return (s.getTimeFinishStarving()/totalFinishTime) * 100;
+    }
+
+    private double calculateStageBlockingTimePercentage(Stage s, double totalFinishTime)
+    {
+        return (s.getTimeFinishBlocking()/totalFinishTime) * 100;
+    }
+
+
+
 }

@@ -24,8 +24,15 @@ public class Stage implements Comparable<Stage>
 
 
     private int itemCreationTally = 0;
-    private double timeStartProcessing;
-    private double timeFinishedProcessing;
+
+    private double timeStartProcessing = 0;
+    private double timeFinishedProcessing = 0;
+
+    private double timeStartStarving = 0;
+    private double timeFinishStarving = 0;
+
+    private double timeStartBlocking = 0;
+    private double timeFinishBlocking = 0;
 
     /*Passing simulation through to access currentSimulationTime*/
     private Simulation simulation;
@@ -88,6 +95,13 @@ public class Stage implements Comparable<Stage>
         return name;
     }
 
+
+    public double getTimeFinishedProcessing() { return timeFinishedProcessing; }
+
+    public double getTimeFinishStarving() { return timeFinishStarving; }
+
+    public double getTimeFinishBlocking() { return timeFinishBlocking; }
+
     @Override
     public String toString() {
         return getName() + " [" + this.state + "]" + (isProcessing() ? " (Finishes at " + finishProcessingTime + ")": "");
@@ -103,9 +117,9 @@ public class Stage implements Comparable<Stage>
         double d = r.nextDouble();
 
         // TODO: Remove fake number and replace with actual function
-        return multiplier;
+        //return multiplier;
 
-        //return (m * multiplier) + ((n * multiplier) * (d - 0.5));
+        return (m * multiplier) + ((n * multiplier) * (d - 0.5));
     }
 
 
@@ -151,14 +165,17 @@ public class Stage implements Comparable<Stage>
     public void finishProcessingItem()
     {
         state = StageStates.FINISHEDPROCESSING;
-
+        timeFinishedProcessing += simulation.getCurrentSimulationTime() - timeStartProcessing;
     }
 
     public void starve()
     {
         //Inbound Queue is Empty = starve()
         if(isEmpty())
+        {
             state = StageStates.STARVED;
+            timeStartStarving = simulation.getCurrentSimulationTime();
+        }
         else
             throw new IllegalStateException("Trying to starve when the state is not empty");
     }
@@ -166,7 +183,10 @@ public class Stage implements Comparable<Stage>
     public void unstarve()
     {
         if(isStarved())
+        {
             state = StageStates.EMPTY;
+            timeFinishStarving += simulation.getCurrentSimulationTime() - timeStartStarving;
+        }
         else
             throw new IllegalStateException("Trying to unstarve when the state is not starving");
     }
@@ -211,7 +231,10 @@ public class Stage implements Comparable<Stage>
         //Needs to stay in the current stage until room is available
 
         if(isFinishedProcessing())
+        {
             state = StageStates.BLOCKED;
+            timeStartBlocking = simulation.getCurrentSimulationTime();
+        }
         else
             throw new IllegalStateException("Trying to block from the incorrect state");
     }
@@ -220,7 +243,10 @@ public class Stage implements Comparable<Stage>
     {
         //Outbound Queue is not full
         if(isBlocked())
+        {
             state = StageStates.FINISHEDPROCESSING;
+            timeFinishBlocking += simulation.getCurrentSimulationTime() - timeStartBlocking;
+        }
         else
             throw new IllegalStateException("Trying to unblock when the state is not blocked");
 
@@ -286,7 +312,6 @@ public class Stage implements Comparable<Stage>
                 return 0;
         }
     }
-
 
 
 }
