@@ -155,6 +155,12 @@ public class Stage implements Comparable<Stage>
         p = calculatePValue();
         finishProcessingTime = simulation.getCurrentSimulationTime() + p;
 
+        if(finishProcessingTime < simulation.getCurrentSimulationTime())
+        {
+            throw new RuntimeException("Error. Finish Processing Time is less than the current simulation time. " +
+                    "M:" + simulation.getM() + " ,N:" + simulation.getN());
+        }
+
         simulation.notifyOfFinishProcessingTime(finishProcessingTime);
 
         System.out.println(String.format("Time %1$s: Stage %2$s starting processing. Will complete at %3$s",

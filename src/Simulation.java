@@ -386,4 +386,7 @@ public class Simulation
         return (s.getTimeFinishBlocking()/totalFinishTime) * 100;
     }
 
+    public double getM() {return m;}
+    public double getN() {return n;}
+
 }
