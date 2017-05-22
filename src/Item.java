@@ -2,18 +2,19 @@
 import java.util.*;
 
 /**
- *
+ * Item class used across Stages and InterStage Storage - Core part of the program
+ * Includes various methods and attributes for querying
  */
 public class Item
 {
     private int uniqueID;
-    private double timeWhenGoingIntoIdle;
+    private double creationTime = 0;
+
+  /*private double timeWhenGoingIntoIdle;
     private boolean idle;
     private double totalTimeSpentIdling = 0;
-
-    private double creationTime = 0;
     private double finishTime = 0;
-    private boolean itemFinished;
+    private boolean itemFinished;*/
 
     public Item(int stageID, double creationTime)
     {
@@ -32,17 +33,37 @@ public class Item
         this.uniqueID = uniqueID;
     }
 
-    public double getTotalTimeSpentIdling()
-    {
-        return totalTimeSpentIdling;
-    }
-
+    /*****************************************GETTERS AND SETTERS*****************************************/
+    /**
+     * public int getUniqueID()
+     * @return - Returns the uniqueID of the Item
+     */
     public int getUniqueID()
     {
         return uniqueID;
     }
 
-    public void finishItem(double finishTime) throws Exception
+
+
+/* public double getThroughputTime() throws Exception
+    {
+        if(itemFinished)
+            return finishTime - creationTime;
+        else
+            throw new Exception("Item needs to finalised first");
+    }
+*/
+
+/*
+    public double getTotalTimeSpentIdling()
+    {
+        return totalTimeSpentIdling;
+    }
+*/
+
+    /*****************************************QUERY*****************************************/
+
+/*  public void finishItem(double finishTime) throws Exception
     {
         if(finishTime < creationTime)
             throw new Exception("Finish time parameter is less than creation time");
@@ -50,17 +71,9 @@ public class Item
         this.finishTime = finishTime;
         itemFinished = true;
     }
+*/
 
-    public double getThroughputTime() throws Exception
-    {
-        if(itemFinished)
-            return finishTime - creationTime;
-        else
-            throw new Exception("Item needs to finalised first");
-    }
-
-
-
+/*
     public boolean isIdle() { return idle; }
 
     public void goIntoIdleState(double currentTime)
@@ -81,6 +94,7 @@ public class Item
         else
             throw new Exception("Item needs to come out of idle state");
     }
+*/
 }
 
 

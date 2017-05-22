@@ -152,7 +152,7 @@ public class Simulation
         //todo fix the parallel stages to eliminate priority on the a-stages
         //todo when two parallel stages are blocked, stage a will take priority over stage b
         ///todo may need a priorituy queue of items when this happens??
-        while (currentSimulationTime <= MAX_SIMULATION_TIME)
+        while (currentSimulationTime < MAX_SIMULATION_TIME)
         {
             for(MasterStage m: masterStages)
             {
@@ -191,7 +191,9 @@ public class Simulation
                 //todo ask Dan: If an item is created on the MAX_SIMULATION_TIME, should we continue processing it?
                 //todo aka tempRemoval >= MAX or temp > MAX
                 currentSimulationTime = tempRemoval;
+/*
                 System.out.println(String.format("=== Updating Time to %1$s ===", currentSimulationTime));
+*/
             }
         }
     }
@@ -352,11 +354,10 @@ public class Simulation
         {
             System.out.println(
                     q.getName() +
-                    "\t  | \t "
-                    + String.format("%.5f", calculateAverageItemTimeInQueue(q)) +
-                    "\t | \t "
-
-
+                    "\t  | \t " +
+                    String.format("%.5f", q.calculateAverageTimeInQueue()) +
+                    "\t | \t " +
+                    String.format("%.5f", q.calculateAverageNumberOfItemsInQueue())
             );
         }
 
@@ -384,12 +385,5 @@ public class Simulation
     {
         return (s.getTimeFinishBlocking()/totalFinishTime) * 100;
     }
-
-    private double calculateAverageItemTimeInQueue(InterStageStorage q)
-    {
-        return q.calculateAverageTimeInQueue(); //todo probs wrong
-    }
-
-
 
 }
