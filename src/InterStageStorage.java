@@ -118,6 +118,10 @@ public class InterStageStorage
         //return totalTimeInQueue / totalNumItemsRemovedFromQueue
     }
 
+    /**
+     * public double calculateAverageNumberOfItemsInQueue()
+     * @return - Returns the total time in the queue divided by the max simulation time
+     */
     public double calculateAverageNumberOfItemsInQueue()
     {
         return totalTimeInQueue / simulation.MAX_SIMULATION_TIME;
@@ -125,15 +129,15 @@ public class InterStageStorage
 
     /*****************************************OTHER*****************************************/
 
+    /**
+     * public void enqueue(Item item)
+     * Enqueues the item to the list parameter (Type LinkedList)
+     * Updates the total time an item spends in the queue and relevant data statistics
+     * @param item - Type item to be enqueued into the list
+     */
     public void enqueue(Item item)
     {
-        //Update the total time with the current time minus the lastRemovalTime, all multiplied the size
-        //If an item is moved straight from one stage to another, the totalTime will remain the same
-        //In the event that an item is dequeued from the queue and another item is enqueued to the same queue, the totaltime
-        //  will remain the same since the lastAddRemoveTime had already been updated
-        totalTimeInQueue += (simulation.getCurrentSimulationTime() - lastAddRemoveTime) * size();
-        //Update the lastAddRemovalTime to the current simulation time
-        lastAddRemoveTime = simulation.getCurrentSimulationTime();
+        updateTotalTimeInQueue();
 
         queueStartTimes.add(totalNumItemsAddedToQueue, simulation.getCurrentSimulationTime());
         totalNumItemsAddedToQueue++;
@@ -142,16 +146,42 @@ public class InterStageStorage
 
     }
 
+    /**
+     * public Item dequeue()
+     * Dequeues an item from the list (LinkedList)
+     * Updates the total time an item spends in the queue and relevant data statistics
+     * @return - Item removed from the LinkedList
+     */
     public Item dequeue()
     {
-        totalTimeInQueue += (simulation.getCurrentSimulationTime() - lastAddRemoveTime) * size();
-        lastAddRemoveTime = simulation.getCurrentSimulationTime();
+        updateTotalTimeInQueue();
 
         queueFinishTimes.add(totalNumItemsRemovedFromQueue, simulation.getCurrentSimulationTime());
         totalNumItemsRemovedFromQueue++;
+
         return list.remove();
     }
 
+    /**
+     * private void updateTotalTimeInQueue()
+     * Updates the total time an item spends in the queue
+     * The LastAddRemoveTime is updated to the current simulation time when a modification occurs
+     */
+    private void updateTotalTimeInQueue()
+    {
+        //Update the total time with the current time minus the lastRemovalTime, all multiplied the size
+        //If an item is moved straight from one stage to another, the totalTime will remain the same
+        //In the event that an item is dequeued from the queue and another item is enqueued to the same queue, the totaltime
+        //  will remain the same since the lastAddRemoveTime had already been updated
+        totalTimeInQueue += (simulation.getCurrentSimulationTime() - lastAddRemoveTime) * size();
+        //Update the lastAddRemovalTime to the current simulation time
+        lastAddRemoveTime = simulation.getCurrentSimulationTime();
+    }
+
+    /**
+     * public String toString()
+     * @return - Returns Storage class in String format (Useful for debugging)
+     */
     @Override
     public String toString()
     {
