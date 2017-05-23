@@ -36,16 +36,16 @@ public class Simulation
         this.qMax = qMax;
 
         //Create and link simulation
-        s0a = new Stage(this.m, this.n, 2, 0, this, "S0a");
-        s0b = new Stage(this.m, this.n, 1, 1, this, "S0b");
-        s1a = new Stage(this.m, this.n, 1, this, "S1");
-        s2a = new Stage(this.m, this.n, 1, this, "S2");
-        s3a = new Stage(this.m, this.n, 2, this, "s3a");
-        s3b = new Stage(this.m, this.n, 2, this, "s3b");
-        s4a = new Stage(this.m, this.n, 1, this, "s4");
-        s5a = new Stage(this.m, this.n, 2, this, "s5a");
-        s5b = new Stage(this.m, this.n, 2, this, "s5b");
-        s6a = new Stage(this.m, this.n, 1, this, "s6");
+        s0a = new Stage(2, 0, this, "S0a");
+        s0b = new Stage(1, 1, this, "S0b");
+        s1a = new Stage(1, this, "S1");
+        s2a = new Stage(1, this, "S2");
+        s3a = new Stage(2, this, "s3a");
+        s3b = new Stage(2, this, "s3b");
+        s4a = new Stage(1, this, "s4");
+        s5a = new Stage(2, this, "s5a");
+        s5b = new Stage(2, this, "s5b");
+        s6a = new Stage(1, this, "s6");
 
 
         //Add substages to each master stage
@@ -149,9 +149,6 @@ public class Simulation
     public void startProcessing()
     {
         double tempRemoval;
-        //todo fix the parallel stages to eliminate priority on the a-stages
-        //todo when two parallel stages are blocked, stage a will take priority over stage b
-        ///todo may need a priorituy queue of items when this happens??
         while (currentSimulationTime < MAX_SIMULATION_TIME)
         {
             for(MasterStage m: masterStages)
@@ -188,12 +185,10 @@ public class Simulation
                 break;
             else
             {
-                //todo ask Dan: If an item is created on the MAX_SIMULATION_TIME, should we continue processing it?
-                //todo aka tempRemoval >= MAX or temp > MAX
                 currentSimulationTime = tempRemoval;
-/*
+
                 System.out.println(String.format("=== Updating Time to %1$s ===", currentSimulationTime));
-*/
+
             }
         }
     }

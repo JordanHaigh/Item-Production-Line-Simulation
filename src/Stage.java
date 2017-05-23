@@ -38,21 +38,21 @@ public class Stage implements Comparable<Stage>
     private Simulation simulation;
     private double finishProcessingTime;
 
-    public Stage(double m, double n, int multiplier, Simulation simulation, String name)
+    public Stage(int multiplier, Simulation simulation, String name)
     {
-        this.m = m;
-        this.n = n;
+        this.m = simulation.getM();
+        this.n = simulation.getN();
         this.multiplier = multiplier;
         state = StageStates.STARVED;
         this.simulation = simulation;
         this.name = name;
     }
 
-    public Stage(double m, double n, int multiplier, int stageID, Simulation simulation, String name)
+    public Stage(int multiplier, int stageID, Simulation simulation, String name)
     {
         //Since stag id is being passed through, we know that it will be one of the starting stages
         //Therefore the state should start at empty
-        this(m, n, multiplier, simulation, name);
+        this(multiplier, simulation, name);
         this.stageID = stageID;
         state = StageStates.EMPTY;
     }
@@ -116,9 +116,6 @@ public class Stage implements Comparable<Stage>
     {
         Random r = new Random();
         double d = r.nextDouble();
-
-        // TODO: Remove fake number and replace with actual function
-        //return multiplier;
 
         return (m * multiplier) + ((n * multiplier) * (d - 0.5));
     }

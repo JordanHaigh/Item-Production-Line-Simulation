@@ -1,5 +1,3 @@
-import org.omg.SendingContext.RunTime;
-
 /**
  * Created by Jordan on 15-May-17.
  */
@@ -28,11 +26,6 @@ public class PA3
         }
         else
             throw new RuntimeException("QMAX Value has not been entered correctly");
-
-
-
-        // TODO: Read m, n, qMax from args[]
-        // TODO: Check that args[] has enough supplied values. If not enough  values, throw error and end
 
         Simulation simulation = new Simulation(m,n,qMax);
 

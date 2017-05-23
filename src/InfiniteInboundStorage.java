@@ -3,8 +3,6 @@
  */
 public class InfiniteInboundStorage extends InterStageStorage
 {
-    private double currentTime;
-
     /**InfiniteInboundStorage inbound = new InfiniteInboundStorage(null, s0)**/
     public InfiniteInboundStorage(MasterStage inboundStage, MasterStage outboundStage, Simulation simulation, String name)
     {
