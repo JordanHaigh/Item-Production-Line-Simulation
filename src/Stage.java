@@ -2,7 +2,8 @@ import java.util.Comparator;
 import java.util.Random;
 
 /**
- * Created by Jordan on 15-May-17.
+ * Stage Class - Implements core functionality for the processing of an item. Uses a stateStage enumeration to
+ * determine what state the current Stage is in.
  */
 public class Stage implements Comparable<Stage>
 {
@@ -38,6 +39,12 @@ public class Stage implements Comparable<Stage>
     private Simulation simulation;
     private double finishProcessingTime;
 
+    /**
+     * Overloaded Constructor
+     * @param multiplier - Multiplier for the current stage
+     * @param simulation - Current Simulation object running the simulation
+     * @param name - Name of the Stage
+     */
     public Stage(int multiplier, Simulation simulation, String name)
     {
         this.m = simulation.getM();
@@ -48,6 +55,13 @@ public class Stage implements Comparable<Stage>
         this.name = name;
     }
 
+    /**
+     * Overloaded Constructor
+     * @param multiplier - Multiplier for the current stage
+     * @param stageID - Stage ID for the current stage ID
+     * @param simulation - Current Simulation Object running the simulation
+     * @param name - Name of the Stage
+     */
     public Stage(int multiplier, int stageID, Simulation simulation, String name)
     {
         //Since stag id is being passed through, we know that it will be one of the starting stages
@@ -57,60 +71,95 @@ public class Stage implements Comparable<Stage>
         state = StageStates.EMPTY;
     }
 
+    /*****************************************GETTERS AND SETTERS*****************************************/
+
+    //public InterStageStorage getInboundStorage() { return inboundStorage; }
+
+    //public InterStageStorage getOutboundStorage() { return outboundStorage; }
+
     /**
-     * Getters and Setters
+     * public void setInboundStorage(InterStageStorage inboundStorage)
+     * @param inboundStorage - Inbound Storage to be set
      */
-    public InterStageStorage getInboundStorage() {
-        return inboundStorage;
-    }
+    public void setInboundStorage(InterStageStorage inboundStorage) { this.inboundStorage = inboundStorage; }
 
-    public void setInboundStorage(InterStageStorage inboundStorage) {
-        this.inboundStorage = inboundStorage;
-    }
-
-    public InterStageStorage getOutboundStorage() {
-        return outboundStorage;
-    }
-
+    /**
+     * public void setOutboundStorage(InterStageStorage outboundStorage)
+     * @param outboundStorage - Outbound Storage to be set
+     */
     public void setOutboundStorage(InterStageStorage outboundStorage) {
         this.outboundStorage = outboundStorage;
     }
 
-    public int getStageID() {
-        return stageID;
-    }
+    /**
+     * public int getStageID()
+     * @return - Returns Stage ID
+     */
+    public int getStageID() { return stageID; }
 
-    public double getFinishProcessingTime(){return finishProcessingTime; }
+    /**
+     * public double getFinishProcessingTime()
+     * @return - Returns the Finish Processing Time
+     */
+    public double getFinishProcessingTime() { return finishProcessingTime; }
 
-    public MasterStage getParent() {
-        return parent;
-    }
+    /**
+     * public MasterStage getParent()
+     * @return - Returns the MasterStage Parent
+     */
+    public MasterStage getParent() { return parent; }
 
-    public void setParent(MasterStage parent) {
-        this.parent = parent;
-    }
+    /**
+     * public void setParent(MasterStage parent)
+     * @param parent - Sets the input parameter parent to the parent variable
+     */
+    public void setParent(MasterStage parent) { this.parent = parent; }
 
-    public String getName()
-    {
-        return name;
-    }
+    /**
+     * public String getName()
+     * @return - Returns the name of the Stage
+     */
+    public String getName() { return name; }
 
-
+    /**
+     * public double getTimeFinishedProcessing()
+     * @return - Returns the timeFinishedProcessing
+     */
     public double getTimeFinishedProcessing() { return timeFinishedProcessing; }
 
+    /**
+     * public double getTimeFinishStarving()
+     * @return - Returns the Time Finished Starving
+     */
     public double getTimeFinishStarving() { return timeFinishStarving; }
 
+    /**
+     * public double getTimeFinishBlocking()
+     * @return - Returns the Time Finished Blocking
+     */
     public double getTimeFinishBlocking() { return timeFinishBlocking; }
 
+    /**
+     * public int getItemCreationTally()
+     * @return - Returns the ItemCreationTally
+     */
     public int getItemCreationTally() { return itemCreationTally; }
+
+    /**
+     * public String toString()
+     * @return - Returns a String of the Stage name and whether it is processing
+     */
     @Override
     public String toString() {
         return getName() + " [" + this.state + "]" + (isProcessing() ? " (Finishes at " + finishProcessingTime + ")": "");
     }
 
+    /***************************************** CALCULATION *****************************************/
 
     /**
-     * Calculation
+     * private double calculatePValue()
+     * Calculates the P value for the current stage to determine how long an item will be processing for
+     * @return - Returns the double calculation according the spec
      */
     private double calculatePValue()
     {
@@ -121,29 +170,61 @@ public class Stage implements Comparable<Stage>
     }
 
 
+    /***************************************** CALCULATION *****************************************/
+
     /**
-     * States and Processing
+     * public boolean isStarved()
+     * @return - Returns true or false whether the state is in the starved state
      */
     public boolean isStarved()
     {
         return state.equals(StageStates.STARVED);
     }
 
+    /**
+     * public boolean isBlocked()
+     * @return - Returns true or false whether the state is in the blocked state
+     */
     public boolean isBlocked()
     {
         return state.equals(StageStates.BLOCKED);
     }
 
+    /**
+     * public boolean isProcessing()
+     * @return - Returns true or false whether the state is in the processing state
+     */
     public boolean isProcessing() { return state.equals(StageStates.PROCESSING); }
 
+    /**
+     * public boolean isEmpty()
+     * @return - Returns true or false whether the state is in the empty state
+     */
     public boolean isEmpty() {return state.equals(StageStates.EMPTY); }
 
+    /**
+     * public boolean isReady()
+     * @return - Returns true or false whether the state is the ready state
+     */
     public boolean isReady() {return state.equals(StageStates.READY); }
 
+    /**
+     * public boolean isFinishedProcessing()
+     * @return - Returns true or false whether the state is in the finishedProcessing state
+     */
     public boolean isFinishedProcessing() {return state.equals(StageStates.FINISHEDPROCESSING); }
 
+    /**
+     * public boolean stageIsFinished()
+     * @return - Returns true or false whether the current simulation time is greater than or equal to the finish processing time
+     */
     public boolean stageIsFinished() { return simulation.getCurrentSimulationTime() >= finishProcessingTime; }
 
+    /**
+     * public void startProcessingItem()
+     * State is updated to processing, p value is calculated and added to the priority queue in the simulation class
+     * Time start processing is updated to the current time
+     */
     public void startProcessingItem()
     {
         state = StageStates.PROCESSING;
@@ -166,6 +247,13 @@ public class Stage implements Comparable<Stage>
         timeStartProcessing = simulation.getCurrentSimulationTime();
     }
 
+    /**
+     * public void finishProcessingItem()
+     * Checks whether the state is in the processing state as a precondition
+     * Updates the state and updates relevant data statistics
+     *
+     * Throws an exception if not in the processing state
+     */
     public void finishProcessingItem()
     {
         if(isProcessing())
@@ -177,6 +265,13 @@ public class Stage implements Comparable<Stage>
             throw new IllegalStateException("Trying to finish processing when stage is in  " + state.name() + " state");
     }
 
+    /**
+     * public void starve()
+     * Checks whether the state is in the empty state as a precondition
+     * Updates the state to starved and updates relevant data statistics
+     *
+     * Throws an exception if not in the empty state
+     */
     public void starve()
     {
         //Inbound Queue is Empty = starve()
@@ -189,6 +284,13 @@ public class Stage implements Comparable<Stage>
             throw new IllegalStateException("Trying to starve when the state is not empty");
     }
 
+    /**
+     * public void unstarve()
+     * Checks whether the state is in the starved state as a precondition
+     * Updates the state to empty and updates relevant data statistics
+     *
+     * Throws an exception if not in the starved state
+     */
     public void unstarve()
     {
         if(isStarved())
@@ -200,6 +302,14 @@ public class Stage implements Comparable<Stage>
             throw new IllegalStateException("Trying to unstarve when the state is not starving");
     }
 
+    /**
+     * public void retrieveItemFromInboundStorage()
+     * Checks whether the state is in the empty state, throws an exception if not in the empty state
+     * Checks whether the inbound storage is empty, if empty the stage starves
+     * Checks whether the inbound storage is an instance of the infinite inbound storage
+     *      If true, uses the dequeueWithStageID method
+     * Dequeues an item from the inbound storage  and sets the state to ready
+     */
     public void retrieveItemFromInboundStorage()
     {
         if(!isEmpty())
@@ -234,6 +344,13 @@ public class Stage implements Comparable<Stage>
         }
     }
 
+    /**
+     * public void block()
+     * Checks whether the state is in the FinishedProcessed state
+     * Updates the state to blocked and updates relevant statistics
+     *
+     * Throws an exception if not in the finishedProcessing state
+     */
     public void block()
     {
         //Item cannot be passed to the next queue because it is full
@@ -248,6 +365,13 @@ public class Stage implements Comparable<Stage>
             throw new IllegalStateException("Trying to block from the incorrect state");
     }
 
+    /**
+     * public void unblock()
+     * Checks if the state is in the blocked state
+     * Updates the state to finishedProcess and updates relevant statistics
+     *
+     * Throws an exception if not in the blocked state
+     */
     public void unblock()
     {
         //Outbound Queue is not full
@@ -261,6 +385,13 @@ public class Stage implements Comparable<Stage>
 
     }
 
+    /**
+     * public void sendToOutboundStorage()
+     * Checks if the stage is in the finishedProcessing state - Throws exception if false
+     * Checks if the outbound storage is full - State updated to block if true
+     * Enqueues an item to the outbound storage
+     * State updated to empty
+     */
     public void sendToOutboundStorage()
     {
         //Stage is Empty
@@ -292,6 +423,14 @@ public class Stage implements Comparable<Stage>
 
     public static Comparator<Stage> StageFinishTimeComparator = new Comparator<Stage>()
     {
+        /**
+         * public int compare(Stage s1, Stage s2)
+         * Compares the finishProcessing time of the two parameters and returns an integer whether its
+         * Greater than (>0), Less than (<0) or Equal (0)
+         * @param s1 - First Stage for comparison
+         * @param s2 - Second Stage for comparison
+         * @return - Integer determining whether less than, greater than or equal to 0
+         */
         @Override
         public int compare(Stage s1, Stage s2)
         {
@@ -299,6 +438,11 @@ public class Stage implements Comparable<Stage>
         }
     };
 
+    /**
+     * public int compareTo(Stage stage)
+     * @param stage - Stage for comparison
+     * @return - Returns -1,1,0 where the stage finish time is less than, equal to or greater than
+     */
     @Override
     public int compareTo(Stage stage)
     {
