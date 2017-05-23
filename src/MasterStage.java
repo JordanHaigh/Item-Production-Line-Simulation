@@ -1,9 +1,9 @@
-/**
- * Created by Jordan on 20-May-17.
- */
-
 import java.util.Collections;
 import java.util.LinkedList;
+
+/**
+ *
+ */
 public class MasterStage
 {
     private LinkedList<Stage> substages =  new LinkedList<>();
