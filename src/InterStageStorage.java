@@ -14,10 +14,6 @@ public class InterStageStorage
     protected Simulation simulation;
 
     private int totalNumItemsAddedToQueue = 0;
-    private int totalNumItemsRemovedFromQueue = 0;
-    private LinkedList<Double> queueStartTimes = new LinkedList<>();
-    private LinkedList<Double> queueFinishTimes = new LinkedList<>();
-    private LinkedList<Double> queueDifference = new LinkedList<>();
 
     private double totalTimeInQueue = 0;
     private double lastAddRemoveTime = 0;
@@ -103,15 +99,7 @@ public class InterStageStorage
      */
     public double calculateAverageTimeInQueue()
     {
-        double totalTimeInQueue = 0;
-        for(int i = 0; i < totalNumItemsRemovedFromQueue; i++)
-        {
-            queueDifference.add(i, queueFinishTimes.get(i)-queueStartTimes.get(i));
-            totalTimeInQueue += queueDifference.get(i);
-        }
-
-        return totalTimeInQueue / totalNumItemsAddedToQueue; //todo double check
-        //return totalTimeInQueue / totalNumItemsRemovedFromQueue
+        return totalTimeInQueue / totalNumItemsAddedToQueue;
     }
 
     /**
@@ -120,7 +108,7 @@ public class InterStageStorage
      */
     public double calculateAverageNumberOfItemsInQueue()
     {
-        return totalTimeInQueue / simulation.MAX_SIMULATION_TIME;
+        return totalTimeInQueue / simulation.getCurrentSimulationTime();
     }
 
     /*****************************************OTHER*****************************************/
@@ -135,7 +123,6 @@ public class InterStageStorage
     {
         updateTotalTimeInQueue();
 
-        queueStartTimes.add(totalNumItemsAddedToQueue, simulation.getCurrentSimulationTime());
         totalNumItemsAddedToQueue++;
 
         list.add(item);
@@ -151,10 +138,6 @@ public class InterStageStorage
     public Item dequeue()
     {
         updateTotalTimeInQueue();
-
-        queueFinishTimes.add(totalNumItemsRemovedFromQueue, simulation.getCurrentSimulationTime());
-        totalNumItemsRemovedFromQueue++;
-
         return list.remove();
     }
 
