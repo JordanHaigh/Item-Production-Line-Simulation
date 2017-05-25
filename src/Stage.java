@@ -172,7 +172,7 @@ public class Stage implements Comparable<Stage>
     }
 
 
-    /***************************************** CALCULATION *****************************************/
+    /***************************************** QUERY *****************************************/
 
     /**
      * public boolean isStarved()
@@ -227,6 +227,9 @@ public class Stage implements Comparable<Stage>
      * State is updated to processing, p value is calculated and added to the priority queue in the simulation class
      * Time start processing is updated to the current time
      */
+
+    /*****************************************STATE CHANGES*****************************************/
+
     public void startProcessingItem()
     {
         state = StageStates.PROCESSING;
@@ -420,6 +423,7 @@ public class Stage implements Comparable<Stage>
         }
     }
 
+    /*****************************************COMPARATOR*****************************************/
 
 
 

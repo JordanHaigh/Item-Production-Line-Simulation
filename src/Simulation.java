@@ -29,6 +29,13 @@ public class Simulation
     public final int MAX_SIMULATION_TIME = 10000000;
     private PriorityQueue<Double> timePriorityQueue = new PriorityQueue<>();
 
+    /**
+     * Overloaded Constructor
+     * Creates the simulation according to the assignment specification and creates all necessary links
+     * @param m - Mean value passed through from command line
+     * @param n - Range value passed through from command line
+     * @param qMax - QMax Size passed through from the command line
+     */
     public Simulation(double m, double n, int qMax)
     {
         this.m = m;
@@ -36,6 +43,47 @@ public class Simulation
         this.qMax = qMax;
 
         //Create and link simulation
+        initialiseStages();
+
+        //Add substages to each master stage
+        addSubstagesToMasterStages();
+
+        //Link master stages and its substages
+        linkMasterStages();
+
+        //Link Queue to stage
+       linkQueuesToStages();
+
+        //Link Stages to Queues
+        linkStagesToQueues();
+
+        //Populate MasterStages LL with the current MasterStages
+        masterStages.addLast(s0);
+        masterStages.addLast(s1);
+        masterStages.addLast(s2);
+        masterStages.addLast(s3);
+        masterStages.addLast(s4);
+        masterStages.addLast(s5);
+        masterStages.addLast(s6);
+
+        //Populate Queues LL with the current InterStageStorages
+        queues.addLast(q01);
+        queues.addLast(q12);
+        queues.addLast(q23);
+        queues.addLast(q34);
+        queues.addLast(q45);
+        queues.addLast(q56);
+    }
+
+    /************************************CONSTRUCTOR PRIVATE CREATION AND LINKS************************************/
+
+    /**
+     * private void initialiseStages()
+     * Initialises all stages necessary according to the specification
+     * Constructors include the multiplier for each stage and the current simulation to determine the M and N values
+     */
+    private void initialiseStages()
+    {
         s0a = new Stage(2, 0, this, "S0a");
         s0b = new Stage(1, 1, this, "S0b");
         s1a = new Stage(1, this, "S1");
@@ -46,9 +94,14 @@ public class Simulation
         s5a = new Stage(2, this, "s5a");
         s5b = new Stage(2, this, "s5b");
         s6a = new Stage(1, this, "s6");
+    }
 
-
-        //Add substages to each master stage
+    /**
+     * private void addSubstagesToMasterStages()
+     * Adds each relevant Stage to its MasterStage
+     */
+    private void addSubstagesToMasterStages()
+    {
         s0.addSubStage(s0a);
         s0.addSubStage(s0b);
 
@@ -65,8 +118,14 @@ public class Simulation
         s5.addSubStage(s5b);
 
         s6.addSubStage(s6a);
+    }
 
-        //Link master stages and its substages
+    /**
+     * private void linkMasterStages()
+     * Sets the forward and backward masterStage relevant to the assignment specification
+     */
+    private void linkMasterStages()
+    {
         s0.setForwardMasterStage(s1);
 
         s1.setForwardMasterStage(s2);
@@ -85,8 +144,14 @@ public class Simulation
         s5.setBackwardMasterStage(s4);
 
         s6.setBackwardMasterStage(s5);
+    }
 
-        //Link Queue to stage
+    /**
+     * private void linkQueuesToStage()
+     * Initialises and sets each queues to its relevant forward and backward masterstages
+     */
+    private void linkQueuesToStages()
+    {
         q01 = new InterStageStorage(qMax, s0, s1, this,"q01");
         q12 = new InterStageStorage(qMax, s1, s2, this, "q12");
         q23 = new InterStageStorage(qMax, s2, s3, this, "q23");
@@ -96,8 +161,14 @@ public class Simulation
 
         inboundItemStorage = new InfiniteInboundStorage(null, s0, this, "Infinite Inbound");
         outboundItemStorage = new InfiniteOutboundStorage(s6, null, this,  "Infinite Outbound");
+    }
 
-        //Link Stages to Queues
+    /**
+     * private void linkStagesToQueues()
+     * Sets each Masterstage's storages to its relevant forward and backward InterStageStorage's
+     */
+    private void linkStagesToQueues()
+    {
         s0.setInboundStorage(inboundItemStorage);
         s0.setOutboundStorage(q01);
 
@@ -118,34 +189,80 @@ public class Simulation
 
         s6.setInboundStorage(q56);
         s6.setOutboundStorage(outboundItemStorage);
-
-        masterStages.addLast(s0);
-        masterStages.addLast(s1);
-        masterStages.addLast(s2);
-        masterStages.addLast(s3);
-        masterStages.addLast(s4);
-        masterStages.addLast(s5);
-        masterStages.addLast(s6);
-
-
-        queues.addLast(q01);
-        queues.addLast(q12);
-        queues.addLast(q23);
-        queues.addLast(q34);
-        queues.addLast(q45);
-        queues.addLast(q56);
     }
 
-    public double getCurrentSimulationTime() {
-        return currentSimulationTime;
-    }
+    /*****************************************GETTERS AND SETTERS*****************************************/
 
+    /**
+     * public double getCurrentSimulationTime()
+     * @return - Returns the current simulation time
+     */
+    public double getCurrentSimulationTime() { return currentSimulationTime; }
+
+    /**
+     * public double getM()
+     * @return - Returns mean value
+     */
+    public double getM() {return m;}
+
+    /**
+     * public double getN()
+     * @return - Returns the range value
+     */
+    public double getN() {return n;}
+
+    /**
+     * public void notifyOfFinishProcessingTime(double finishProcessingTime)
+     * Sends the finishProcessingTime parameter to a priority queue for discrete event simulation
+     * @param finishProcessingTime - FinishProcessingTime to be added to the priority queue
+     */
     public void notifyOfFinishProcessingTime(double finishProcessingTime)
     {
         timePriorityQueue.add(finishProcessingTime);
     }
 
+    /*****************************************CALCULATION*****************************************/
 
+    /**
+     * private double calculateStageProcessingTimePercentage(Stage s, double totalFinishTime)
+     * @param s - Current Stage to determine statistic for processing
+     * @param totalFinishTime - Total finish time of the program
+     * @return - Percentage value of total time processing
+     */
+    private double calculateStageProcessingTimePercentage(Stage s, double totalFinishTime)
+    {
+        return (s.getTimeFinishedProcessing()/totalFinishTime) * 100;
+    }
+
+    /**
+     * private double calculateStageStarvingTimePercentage(Stage s, double totalFinishTime)
+     * @param s - Current stage to determine statistic for starving
+     * @param totalFinishTime - Total finish time of the program
+     * @return - Percentage value of total time starving
+     */
+    private double calculateStageStarvingTimePercentage(Stage s, double totalFinishTime)
+    {
+        return (s.getTimeFinishStarving()/totalFinishTime) * 100;
+    }
+
+    /**
+     * private double calculateStageBlocking(Stage s, double totalFinishTime)
+     * @param s - Current Stage to determine statistic for blocking
+     * @param totalFinishTime - Total finish time of the program
+     * @return - Percentage value of total time blocking
+     */
+    private double calculateStageBlockingTimePercentage(Stage s, double totalFinishTime)
+    {
+        return (s.getTimeFinishBlocking()/totalFinishTime) * 100;
+    }
+
+    /*****************************************SIMULATING*****************************************/
+
+    /**
+     * public void startProcessing()
+     * Starts the processing of the simulation
+     * Uses a while loop for to iterate up to the max simulation time using discrete event simulation
+     */
     public void startProcessing()
     {
         double tempRemoval;
@@ -193,6 +310,11 @@ public class Simulation
         }
     }
 
+    /**
+     * private void checkStageContents(Stage s)
+     * Checks the contents of a current stage, whether the stage is processing, finished processing or blocked
+     * @param s - Current stage to check
+     */
     private void checkStageContents(Stage s)
     {
         //Something is inside the stage
@@ -222,6 +344,12 @@ public class Simulation
 
     }
 
+    /**
+     * private void stageHasFinishedProcessing(Stage s)
+     * Called when the stage has finished processing an item and attempts to send to the outbound storage
+     * Retrieves a new item if the current state is not blocked
+     * @param s - Current stage processing the item
+     */
     private void stageHasFinishedProcessing(Stage s)
     {
         s.sendToOutboundStorage(); //Stage may be set to BLOCKED if there is no availability
@@ -238,6 +366,12 @@ public class Simulation
         }
     }
 
+    /**
+     * private void checkForwardStage(Stage s)
+     * Checks the forward masterstage to determine if a substage is empty or finished processing
+     * Calls another private method depending on the state of the current stage
+     * @param s - Current stage checking if we can unblock from the forward master stage
+     */
     private void checkForwardStage(Stage s)
     {
         MasterStage forwardStage = s.getParent().getForwardMasterStage();
@@ -260,6 +394,13 @@ public class Simulation
         }
     }
 
+    /**
+     * private void forceUnblock(Stage s, Stage forwardStage)
+     * Unblocks from the current stage by passing an item through to the forwardStage
+     * Starts to recursively move backwards to unblock as many stages as it can (In order of what stage was blocked first)
+     * @param s - Current Stage to attempt to unblock
+     * @param forwardStage - Forward Stage to unblock from
+     */
     private void forceUnblock(Stage s, Stage forwardStage)
     {
         //The forward stage can take an item from the intermediate queue and free a position
@@ -279,6 +420,12 @@ public class Simulation
             unblockPreviousStages(s);
     }
 
+    /**
+     * private void finishProcessingForwardStage(Stage forwardStage)
+     * Updates the forwardStage state and attempts to send the item to the outbound storage
+     * If that forward stage state becomes empty (Or not blocked) it will attempt to unblock previous stages
+     * @param forwardStage
+     */
     private void finishProcessingForwardStage(Stage forwardStage)
     {
         forwardStage.finishProcessingItem();
@@ -291,6 +438,11 @@ public class Simulation
             unblockPreviousStages(forwardStage);
     }
 
+    /**
+     * private void unblockPreviousStages(Stage forwardStage)
+     * Recursively attempts to unblock the forward stage and move an item from the current stage to its InterStageStorage
+     * @param forwardStage - Stage to retrieve and start processing an item
+     */
     private void unblockPreviousStages(Stage forwardStage)
     {
         // forward stage is now empty and can attempt to take from it's inbound storage
@@ -319,6 +471,12 @@ public class Simulation
         }
     }
 
+
+    /**
+     * public void runDataStatistics()
+     * Creates the table for all statistics required in the assignment specification
+     * Determines Stage Statistics, Queue Statistics and the number of items processed
+     */
     public void runDataStatistics()
     {
         double totalFinishTime = getCurrentSimulationTime();
@@ -360,28 +518,6 @@ public class Simulation
 
         //S0 output
         for(Stage s: s0.getSubstages())
-        {
             System.out.println("Items created in " + s.getName() + ": " + s.getItemCreationTally());
-        }
-
     }
-
-    private double calculateStageProcessingTimePercentage(Stage s, double totalFinishTime)
-    {
-        return (s.getTimeFinishedProcessing()/totalFinishTime) * 100;
-    }
-
-    private double calculateStageStarvingTimePercentage(Stage s, double totalFinishTime)
-    {
-        return (s.getTimeFinishStarving()/totalFinishTime) * 100;
-    }
-
-    private double calculateStageBlockingTimePercentage(Stage s, double totalFinishTime)
-    {
-        return (s.getTimeFinishBlocking()/totalFinishTime) * 100;
-    }
-
-    public double getM() {return m;}
-    public double getN() {return n;}
-
 }

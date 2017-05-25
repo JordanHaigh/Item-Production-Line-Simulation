@@ -1,6 +1,4 @@
 
-import java.util.*;
-
 /**
  * Item class used across Stages and InterStage Storage - Core part of the program
  * Includes various methods and attributes for querying

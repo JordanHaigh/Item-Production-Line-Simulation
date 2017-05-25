@@ -55,9 +55,9 @@ public class InterStageStorage
 
     /*****************************************GETTERS AND SETTERS*****************************************/
 
-    public int getTotalNumItemsAddedToQueue() {return totalNumItemsAddedToQueue; }
+    //public int getTotalNumItemsAddedToQueue() {return totalNumItemsAddedToQueue; }
 
-    public int getTotalNumItemsRemovedFromQueue() {return totalNumItemsRemovedFromQueue; }
+    //public int getTotalNumItemsRemovedFromQueue() {return totalNumItemsRemovedFromQueue; }
 
     /**
      * public String getName()
