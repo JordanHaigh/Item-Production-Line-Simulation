@@ -1,13 +1,21 @@
 /**
- * Created by Jordan on 15-May-17.
+ * public class PA3  - Entry point of the program
  */
 public class PA3
 {
 
+    /**
+     * public static void main(String[]args)
+     * Program expects three input parameters (Double, Double, Int)
+     * Doubles must be valid
+     * Integer value must be greater than 1
+     * @param args - String arguments from the command line
+     */
     public static void main(String[]args)
     {
         double m, n;
         int qMax;
+
         if(args[0] != null)
             m = Double.parseDouble(args[0]);
         else
@@ -26,6 +34,7 @@ public class PA3
         }
         else
             throw new RuntimeException("QMAX Value has not been entered correctly");
+
 
         Simulation simulation = new Simulation(m,n,qMax);
 
