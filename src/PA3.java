@@ -41,12 +41,9 @@ public class PA3
             throw new NumberFormatException("Input for one or more arguments is not in the correct format [Double, Dobule, Int]");
         }
 
-
+        Random r = new Random();
         //Random r = new Random();
-        Simulation simulation = new Simulation(m,n,qMax);
-
-        simulation.startProcessing();
-        simulation.runDataStatistics();
+        Simulation simulation = new Simulation(m,n,qMax, r);
 
        /* long endTime   = System.currentTimeMillis();
         long totalTime = endTime - startTime;

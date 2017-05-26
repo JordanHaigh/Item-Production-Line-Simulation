@@ -163,11 +163,8 @@ public class Stage implements Comparable<Stage>
      */
     private double calculatePValue()
     {
-        //TODO NEEDS TO BE IN THE SIMULATION AND PASS THROUGH RANDOM
-        //TODO OTHERWISE IT WILL NOT WORK WITH A SEED
-        //Random r = new Random();
-        //double d = r.nextDouble();
-        double d = simulation.getRandomNumber();
+        Random r = simulation.getRandomSeed();
+        double d = r.nextDouble();
 
 
         return (m * multiplier) + ((n * multiplier) * (d - 0.5));

@@ -10,8 +10,7 @@ public class Simulation
 {
     private double m, n;
     private int qMax;
-    private Random r = new Random();
-    private double randomNumber = r.nextDouble();
+    private Random randomSeed;
 
     private Stage s0a, s0b, s1a, s2a, s3a, s3b, s4a, s5a, s5b, s6a;
     private MasterStage s0 = new MasterStage("s0M");
@@ -39,11 +38,12 @@ public class Simulation
      * @param n - Range value passed through from command line
      * @param qMax - QMax Size passed through from the command line
      */
-    public Simulation(double m, double n, int qMax)
+    public Simulation(double m, double n, int qMax, Random randomSeed)
     {
         this.m = m;
         this.n = n;
         this.qMax = qMax;
+        this.randomSeed = randomSeed;
 
         //Create and link simulation
         initialiseStages();
@@ -76,6 +76,9 @@ public class Simulation
         queues.addLast(q34);
         queues.addLast(q45);
         queues.addLast(q56);
+
+        startProcessing();
+        runDataStatistics();
     }
 
     /************************************CONSTRUCTOR PRIVATE CREATION AND LINKS************************************/
@@ -224,7 +227,7 @@ public class Simulation
         timePriorityQueue.add(finishProcessingTime);
     }
 
-    public double getRandomNumber() {return randomNumber; }
+    public Random getRandomSeed() {return randomSeed; }
 
     /*****************************************CALCULATION*****************************************/
 
@@ -264,11 +267,11 @@ public class Simulation
     /*****************************************SIMULATING*****************************************/
 
     /**
-     * public void startProcessing()
+     * private void startProcessing()
      * Starts the processing of the simulation
      * Uses a while loop for to iterate up to the max simulation time using discrete event simulation
      */
-    public void startProcessing()
+    private void startProcessing()
     {
         double tempRemoval;
         while (currentSimulationTime < MAX_SIMULATION_TIME)
@@ -478,11 +481,11 @@ public class Simulation
 
 
     /**
-     * public void runDataStatistics()
+     * private void runDataStatistics()
      * Creates the table for all statistics required in the assignment specification
      * Determines Stage Statistics, Queue Statistics and the number of items processed
      */
-    public void runDataStatistics()
+    private void runDataStatistics()
     {
         double totalFinishTime = getCurrentSimulationTime();
 
