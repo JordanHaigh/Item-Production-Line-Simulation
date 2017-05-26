@@ -165,8 +165,10 @@ public class Stage implements Comparable<Stage>
     {
         //TODO NEEDS TO BE IN THE SIMULATION AND PASS THROUGH RANDOM
         //TODO OTHERWISE IT WILL NOT WORK WITH A SEED
-        Random r = new Random();
-        double d = r.nextDouble();
+        //Random r = new Random();
+        //double d = r.nextDouble();
+        double d = simulation.getRandomNumber();
+
 
         return (m * multiplier) + ((n * multiplier) * (d - 0.5));
     }
@@ -235,13 +237,13 @@ public class Stage implements Comparable<Stage>
         state = StageStates.PROCESSING;
 
         //calc p value for random - as per spec
-        p = calculatePValue();
+        this.p = calculatePValue();
         finishProcessingTime = simulation.getCurrentSimulationTime() + p;
 
         if(finishProcessingTime < simulation.getCurrentSimulationTime())
         {
-            throw new RuntimeException("Error. Finish Processing Time is less than the current simulation time. " +
-                    "M:" + simulation.getM() + " ,N:" + simulation.getN());
+            throw new RuntimeException("Error. Finish Processing Time is less than the current simulation time. Review Input params."
+                    +"[Current Simulation Time: " + simulation.getCurrentSimulationTime() + "] [Finish ProcessingTime " + finishProcessingTime + "] ");
         }
 
         simulation.notifyOfFinishProcessingTime(finishProcessingTime);

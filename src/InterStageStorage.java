@@ -68,28 +68,19 @@ public class InterStageStorage
      * public int size()
      * @return - Returns size of the list
      */
-    public int size()
-    {
-        return list.size();
-    }
+    public int size() { return list.size(); }
 
     /**
      * public boolean isFull()
      * @return - Returns true is the list is full, false if not
      */
-    public boolean isFull()
-    {
-        return list.size() == qMax;
-    }
+    public boolean isFull() { return list.size() == qMax; }
 
     /**
      * public boolean isEmpty()
      * @return - Returns true if the list is empty, false if not
      */
-    public boolean isEmpty()
-    {
-        return list.size() == 0;
-    }
+    public boolean isEmpty() { return list.size() == 0; }
 
     /**
      * public double calculateAverageTimeInQueue()

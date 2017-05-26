@@ -4,11 +4,14 @@
 
 import java.util.PriorityQueue;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class Simulation
 {
     private double m, n;
     private int qMax;
+    private Random r = new Random();
+    private double randomNumber = r.nextDouble();
 
     private Stage s0a, s0b, s1a, s2a, s3a, s3b, s4a, s5a, s5b, s6a;
     private MasterStage s0 = new MasterStage("s0M");
@@ -221,6 +224,8 @@ public class Simulation
         timePriorityQueue.add(finishProcessingTime);
     }
 
+    public double getRandomNumber() {return randomNumber; }
+
     /*****************************************CALCULATION*****************************************/
 
     /**
@@ -304,7 +309,7 @@ public class Simulation
             {
                 currentSimulationTime = tempRemoval;
 
-                System.out.println(String.format("=== Updating Time to %1$s ===", currentSimulationTime));
+                //System.out.println(String.format("=== Updating Time to %1$s ===", currentSimulationTime));
 
             }
         }
