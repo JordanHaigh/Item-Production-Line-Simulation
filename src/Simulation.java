@@ -225,6 +225,10 @@ public class Simulation
         timePriorityQueue.add(finishProcessingTime);
     }
 
+    /**
+     * public Random getRandom()
+     * @return - Random Time seed
+     */
     public Random getRandomSeed() {return randomSeed; }
 
     /*****************************************CALCULATION*****************************************/
