@@ -77,8 +77,6 @@ public class Simulation
         queues.addLast(q45);
         queues.addLast(q56);
 
-        startProcessing();
-        runDataStatistics();
     }
 
     /************************************CONSTRUCTOR PRIVATE CREATION AND LINKS************************************/
@@ -267,11 +265,11 @@ public class Simulation
     /*****************************************SIMULATING*****************************************/
 
     /**
-     * private void startProcessing()
+     * public void startProcessing()
      * Starts the processing of the simulation
      * Uses a while loop for to iterate up to the max simulation time using discrete event simulation
      */
-    private void startProcessing()
+    public void startProcessing()
     {
         double tempRemoval;
         while (currentSimulationTime < MAX_SIMULATION_TIME)
@@ -481,11 +479,11 @@ public class Simulation
 
 
     /**
-     * private void runDataStatistics()
+     * public void runDataStatistics()
      * Creates the table for all statistics required in the assignment specification
      * Determines Stage Statistics, Queue Statistics and the number of items processed
      */
-    private void runDataStatistics()
+    public void runDataStatistics()
     {
         double totalFinishTime = getCurrentSimulationTime();
 

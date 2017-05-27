@@ -2,7 +2,6 @@
  * public class PA3  - Entry point of the program
  */
 
-import java.text.NumberFormat;
 import java.util.Random;
 
 public class PA3
@@ -44,8 +43,10 @@ public class PA3
         Random r = new Random();
         //Random r = new Random();
         Simulation simulation = new Simulation(m,n,qMax, r);
+        simulation.startProcessing();
+        simulation.runDataStatistics();
 
-       /* long endTime   = System.currentTimeMillis();
+        /*long endTime   = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println(totalTime);*/
 
