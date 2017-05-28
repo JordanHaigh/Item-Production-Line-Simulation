@@ -249,7 +249,7 @@ public class Stage implements Comparable<Stage>
                 simulation.getCurrentSimulationTime(), this.name, finishProcessingTime));*/
 
         timeStartProcessing = simulation.getCurrentSimulationTime();
-        item.setCreationTime(timeStartProcessing);
+        //item.setCreationTime(timeStartProcessing);
     }
 
     /**
@@ -266,7 +266,7 @@ public class Stage implements Comparable<Stage>
             state = StageStates.FINISHEDPROCESSING;
             double finishTime = simulation.getCurrentSimulationTime() - timeStartProcessing;
             timeFinishedProcessing += finishTime;
-            item.updateFinishedProductionLineTime(finishTime);
+            //item.updateFinishedProductionLineTime(finishTime);
         }
         else
             throw new IllegalStateException("Trying to finish processing when stage is in  " + state.name() + " state");
@@ -304,7 +304,7 @@ public class Stage implements Comparable<Stage>
         {
             state = StageStates.EMPTY;
             timeFinishStarving += simulation.getCurrentSimulationTime() - timeStartStarving;
-            item.updateTotalStarveTime(timeFinishStarving);
+            //item.updateTotalStarveTime(timeFinishStarving);
         }
         else
             throw new IllegalStateException("Trying to unstarve when the state is not starving");
@@ -387,7 +387,7 @@ public class Stage implements Comparable<Stage>
         {
             state = StageStates.FINISHEDPROCESSING;
             timeFinishBlocking += simulation.getCurrentSimulationTime() - timeStartBlocking;
-            item.updateTotalBlockTime(timeFinishBlocking);
+            //item.updateTotalBlockTime(timeFinishBlocking);
         }
         else
             throw new IllegalStateException("Trying to unblock when the state is not blocked");
