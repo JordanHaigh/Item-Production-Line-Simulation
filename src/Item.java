@@ -45,22 +45,59 @@ public class Item
         return uniqueID;
     }
 
+    /**
+     * public double getCreationTime()
+     * @return - Creation time of item
+     */
     public double getCreationTime() { return creationTime; }
 
+    /**
+     * public void setCreationTime(double creationTime)
+     * @param creationTime - Sets class variable creationTime to the input parameter
+     */
     public void setCreationTime(double creationTime) { this.creationTime = creationTime; }
 
+    /**
+     * public double getFinishTime()
+     * @return - Finish time of the item
+     */
     public double getFinishTime() { return finishTime; }
 
+    /**
+     * public void updateFinishedProductionLineTime
+     * Updates the totalTime throughout the production line to determine its throughput
+     * @param time - Current end time of an item in its stage
+     */
     public void updateFinishedProductionLineTime(double time) { this.finishedProductionLineTime += time; }
 
+    /**
+     * public fouble getFinishedProductionLineTime()
+     * @return - Total time of the item throughout the production line
+     */
     public double getFinishedProductionLineTime() { return finishedProductionLineTime; }
 
+    /**
+     * public getTotalBlockTime()
+     * @return - Returns total blocking time of the item
+     */
     public double getTotalBlockTime() { return totalBlockTime; }
 
+    /**
+     * public void updateTotalBlockTime(double blockTime)
+     * @param blockTime - Amount of time the item was blocked for at its current position
+     */
     public void updateTotalBlockTime(double blockTime) { this.totalBlockTime += blockTime; }
 
+    /**
+     * public double getTotalStarveTime()
+     * @return - Total Starving time throughout the production line
+     */
     public double getTotalStarveTime() { return totalStarveTime; }
 
+    /**
+     * public void updateTotalStarveTime(double starveTime)
+     * @param starveTime - Amount of time the item was starved for at its current position
+     */
     public void updateTotalStarveTime(double starveTime) { this.totalStarveTime += starveTime; }
 
 
