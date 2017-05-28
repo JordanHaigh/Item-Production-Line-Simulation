@@ -7,6 +7,10 @@ public class Item
 {
     private int uniqueID;
     private double creationTime = 0;
+    private double finishTime = 0;
+    private double finishedProductionLineTime = 0;
+    private double totalBlockTime = 0;
+    private double totalStarveTime = 0;
 
   /*private double timeWhenGoingIntoIdle;
     private boolean idle;
@@ -41,58 +45,25 @@ public class Item
         return uniqueID;
     }
 
+    public double getCreationTime() { return creationTime; }
+
+    public void setCreationTime(double creationTime) { this.creationTime = creationTime; }
+
+    public double getFinishTime() { return finishTime; }
+
+    public void updateFinishedProductionLineTime(double time) { this.finishedProductionLineTime += time; }
+
+    public double getFinishedProductionLineTime() { return finishedProductionLineTime; }
+
+    public double getTotalBlockTime() { return totalBlockTime; }
+
+    public void updateTotalBlockTime(double blockTime) { this.totalBlockTime += blockTime; }
+
+    public double getTotalStarveTime() { return totalStarveTime; }
+
+    public void updateTotalStarveTime(double starveTime) { this.totalStarveTime += starveTime; }
 
 
-/* public double getThroughputTime() throws Exception
-    {
-        if(itemFinished)
-            return finishTime - creationTime;
-        else
-            throw new Exception("Item needs to finalised first");
-    }
-*/
-
-/*
-    public double getTotalTimeSpentIdling()
-    {
-        return totalTimeSpentIdling;
-    }
-*/
-
-    /*****************************************QUERY*****************************************/
-
-/*  public void finishItem(double finishTime) throws Exception
-    {
-        if(finishTime < creationTime)
-            throw new Exception("Finish time parameter is less than creation time");
-
-        this.finishTime = finishTime;
-        itemFinished = true;
-    }
-*/
-
-/*
-    public boolean isIdle() { return idle; }
-
-    public void goIntoIdleState(double currentTime)
-    {
-        timeWhenGoingIntoIdle = currentTime;
-        idle =  true;
-    }
-
-    public void comeOutOfIdleState(double currentTime) throws Exception
-    {
-        if(idle)
-        {
-            double timeSpentIdling = currentTime - timeWhenGoingIntoIdle;
-            totalTimeSpentIdling += timeSpentIdling;
-            idle = false;
-        }
-
-        else
-            throw new Exception("Item needs to come out of idle state");
-    }
-*/
 }
 
 

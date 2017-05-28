@@ -40,7 +40,7 @@ public class PA3
         }
         catch(Exception e)
         {
-            System.err.println("Input for one or more arguments is not in the correct format.\n" + e);
+            System.err.println("Input for one or more arguments is not in the correct format.\n" + e.getMessage());
             System.exit(1);
         }
 
