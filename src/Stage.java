@@ -388,6 +388,7 @@ public class Stage implements Comparable<Stage>
             state = StageStates.FINISHEDPROCESSING;
             timeFinishBlocking += simulation.getCurrentSimulationTime() - timeStartBlocking;
             //item.updateTotalBlockTime(timeFinishBlocking);
+            //item.updateIdleTime(timeFinishBlocking);
         }
         else
             throw new IllegalStateException("Trying to unblock when the state is not blocked");

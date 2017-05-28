@@ -11,12 +11,7 @@ public class Item
     private double finishedProductionLineTime = 0;
     private double totalBlockTime = 0;
     private double totalStarveTime = 0;
-
-  /*private double timeWhenGoingIntoIdle;
-    private boolean idle;
-    private double totalTimeSpentIdling = 0;
-    private double finishTime = 0;
-    private boolean itemFinished;*/
+    private double idleTime = 0;
 
     public Item(int stageID, double creationTime)
     {
@@ -100,7 +95,18 @@ public class Item
      */
     public void updateTotalStarveTime(double starveTime) { this.totalStarveTime += starveTime; }
 
+    /**
+     * public double getIdleTime()
+     * @return - Idle time of the item
+     */
+    public double getIdleTime() { return idleTime; }
 
+    /**
+     * public void updateIdleTime(double time)
+     * When an item is blocked or waiting in a queue
+     * @param time - Updates the total idle time with the current time value
+     */
+    public void updateIdleTime(double time) { this.idleTime += time; }
 }
 
 
