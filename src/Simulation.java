@@ -491,7 +491,7 @@ public class Simulation
     {
         double totalFinishTime = getCurrentSimulationTime();
 
-        System.out.println("Station | %Processing \t | %Starving \t | %Blocked \t");
+        System.out.println("Station \t| \t %Processing \t | \t %Starving \t | \t %Blocked \t");
 
         for(MasterStage m: masterStages)
         {
@@ -512,7 +512,7 @@ public class Simulation
         System.out.println();
 
         //Queue output
-        System.out.println("Queue | TimeAverage \t | ItemAverage");
+        System.out.println("Queue \t  | \t TimeAverage \t | \t ItemAverage");
         for(InterStageStorage q: queues)
         {
             System.out.println(
