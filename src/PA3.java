@@ -23,21 +23,25 @@ public class PA3
             System.exit(0);
         }
 
-        double m, n;
-        int qMax;
+        //Variables initialised only to prevent catching the wrong exceptions
+        double m = 0;
+        double n = 0;
+        int qMax = 0;
 
         try
         {
             m = Double.parseDouble(args[0]);
+            if(m < 0)
+                throw new RuntimeException("M must be positive");
             n = Double.parseDouble(args[1]);
             qMax = Integer.parseInt(args[2]);
             if(qMax <= 1)
                 throw new RuntimeException("QMAX is less than or equal to 1");
-
         }
-        catch(NumberFormatException e)
+        catch(Exception e)
         {
-            throw new NumberFormatException("Input for one or more arguments is not in the correct format [Double, Dobule, Int]");
+            System.err.println("Input for one or more arguments is not in the correct format.\n" + e);
+            System.exit(1);
         }
 
         Random r = new Random();
